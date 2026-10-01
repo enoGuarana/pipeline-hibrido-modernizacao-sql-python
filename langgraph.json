@@ -3,6 +3,8 @@
   "graphs": {
     "modernization": "pipeline.graph:build_graph"
   },
+  "http": {
+    "app": "pipeline.api:app"
+  },
   "env": ".env"
 }
-

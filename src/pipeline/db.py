@@ -1,9 +1,9 @@
+import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-import os
 
+from psycopg.types.json import Jsonb
 from psycopg_pool import AsyncConnectionPool
-
 
 CREATE_HISTORY_TABLE = """
 CREATE TABLE IF NOT EXISTS modernization_history (
@@ -36,6 +36,51 @@ async def initialize_database(pool: AsyncConnectionPool) -> None:
         await connection.commit()
 
 
+async def create_pending_run(
+    pool: AsyncConnectionPool,
+    *,
+    source_code: str,
+    report: dict[str, object],
+) -> int:
+    """Create the history row before pipeline processing starts."""
+    async with pool.connection() as connection:
+        async with connection.cursor() as cursor:
+            await cursor.execute(
+                """
+                INSERT INTO modernization_history (source_code, report, status)
+                VALUES (%s, %s, 'pending')
+                RETURNING id
+                """,
+                (source_code, Jsonb(report)),
+            )
+            row = await cursor.fetchone()
+        await connection.commit()
+    if row is None:
+        raise RuntimeError("Persisted run did not receive an identifier")
+    return int(row[0])
+
+
+async def finalize_run(
+    pool: AsyncConnectionPool,
+    *,
+    run_id: int,
+    status: str,
+    report: dict[str, object],
+    generated_code: str | None = None,
+) -> None:
+    """Update the history row when the current pipeline slice finishes."""
+    async with pool.connection() as connection:
+        await connection.execute(
+            """
+            UPDATE modernization_history
+               SET generated_code = %s, report = %s, status = %s
+             WHERE id = %s
+            """,
+            (generated_code, Jsonb(report), status, run_id),
+        )
+        await connection.commit()
+
+
 @asynccontextmanager
 async def lifespan_pool() -> AsyncIterator[AsyncConnectionPool]:
     pool = make_pool()
@@ -45,4 +90,3 @@ async def lifespan_pool() -> AsyncIterator[AsyncConnectionPool]:
         yield pool
     finally:
         await pool.close()
-

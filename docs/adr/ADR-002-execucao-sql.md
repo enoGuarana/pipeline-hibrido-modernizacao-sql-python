@@ -1,8 +1,9 @@
 # ADR-002 — Onde preservar a semântica SQL
 
-- **Status:** proposta
-- **Decisão provisória:** preservar queries e transações no PostgreSQL quando isso reduzir risco semântico; usar Python para orquestração e regras que precisem sair do banco.
-- **Alternativas:** reescrever tudo em Python (mais portável, maior risco em transações, NULL, tipos e locking); delegar tudo ao banco (maior fidelidade, menor modernização).
-- **Trade-off:** abordagem híbrida exige testes por procedure e contratos de transação, mas limita divergências em `FOR UPDATE`, `EXCEPTION`, CTEs e tipos numéricos.
-- **Limitação:** nenhuma equivalência foi medida; decisão só poderá ser confirmada após testes comportamentais contra o banco legado.
-
+- **Status:** proposta, não aceita; fronteiras concretas ainda pendentes
+- **Contexto:** as procedures usam transações, `FOR UPDATE`, exceções, `JSONB`, cursores e CTE recursiva; a fronteira de tradução pode alterar comportamento.
+- **Decisão proposta:** usar abordagem híbrida por construção: preservar SQL, operações relacionais, locks e transações no PostgreSQL quando isso reduzir risco semântico; usar Python para controle de fluxo, contratos e orquestração; decidir a fronteira por procedure.
+- **Alternativas:** reescrever tudo em Python; delegar tudo ao banco.
+- **Prós/contras:** tende a preservar semântica e permite modernização gradual; mantém acoplamento ao PostgreSQL, mistura linguagens e exige testes por procedure.
+- **Evidência:** leitura das construções dos anexos B–F; nenhuma equivalência foi medida e não há aprovação explícita desta direção técnica.
+- **Condição de revisão:** revisar a fronteira após protótipo comparável de pelo menos uma procedure simples e uma transacional, ou diante de divergência comportamental.

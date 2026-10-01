@@ -1,8 +1,10 @@
 # ADR-003 — Uso de LLM na geração
 
-- **Status:** proposta
-- **Decisão provisória:** se LLM for usada, receberá AST/estrutura semântica, riscos e schema, nunca apenas SQL bruto; a saída passará por `ast.parse`, lint e testes.
-- **Alternativas:** regras determinísticas (reprodutíveis, cobertura inicial limitada); LLM direta (rápida, mas difícil de auditar e mais propensa a alucinação).
-- **Trade-off:** contexto estruturado aumenta custo/latência, mas torna o prompt rastreável e a falha diagnosticável.
-- **Limitação:** nenhum provedor, prompt ou chamada foi implementado nesta fatia.
+- **Status:** proposta, não aceita
+- **Contexto:** a geração pode usar LLM, mas o desafio exige rastreabilidade do contexto e validação da saída.
+- **Decisão proposta:** se LLM for adotada, receberá estrutura semântica, riscos e schema, nunca somente SQL bruto; a saída passará por validação estática e comportamental.
+- **Alternativas:** regras determinísticas; LLM direta sem estrutura intermediária.
+- **Prós/contras:** contexto estruturado melhora auditabilidade, mas aumenta custo/latência; regras são reprodutíveis, porém têm cobertura inicial limitada.
+- **Evidência:** nenhum provedor, prompt ou chamada foi implementado; nenhuma comparação foi executada.
+- **Condição de revisão:** decidir após medir a cobertura do parser/analisador e comparar uma saída determinística com uma saída assistida em fixtures controladas.
 
