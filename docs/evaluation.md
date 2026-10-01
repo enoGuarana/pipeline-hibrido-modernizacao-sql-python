@@ -1,14 +1,43 @@
-# Evaluation
+# Avaliação reproduzível
 
-## Estado atual
+## Escopo implementado
 
-O bônus de evaluation foi planejado, mas ainda não possui resultados publicados. Não há denominador, aprovação ou equivalência a declarar antes da execução real B–F.
+O endpoint `GET /evaluation` calcula métricas a partir das linhas terminais de
+`modernization_history`. A seleção inclui `success`, `failure` e `partial`,
+portanto falhas e gerações simuladas permanecem no denominador. Linhas
+`pending` não são avaliações concluídas e ficam fora do denominador.
 
-## Métricas aprovadas para a próxima etapa
+As métricas atuais são:
 
-- aprovação estática na primeira tentativa;
-- aprovação estática após o único reparo permitido;
-- falhas por etapa;
-- equivalência comportamental somente nos cenários executados no banco isolado.
+- `total_runs`: número de execuções terminais avaliadas;
+- `first_attempt_static_approval`: validação estática aprovada na primeira tentativa;
+- `after_repair_static_approval`: validação estática aprovada após reparo;
+- `failures_by_stage`: erros agrupados pelo estágio informado no relatório;
+- `behavioral_equivalence_tested`: somente relatórios explicitamente marcados como `tested`;
+- contagens de gerações simuladas e reais.
 
-Cada métrica deverá informar conjunto avaliado, denominador, modelo, versão do prompt, tentativas, limitações e identificadores das execuções. O resultado poderá ser persistido em tabela própria ou exposto por endpoint/notebook. A validação estática nunca será apresentada como equivalência.
+Uma aprovação estática exige `ast_parse=passed` e `lint=passed` no relatório do
+estágio de validação. Isso não demonstra equivalência comportamental.
+
+## Reprodução
+
+Com o servidor e o PostgreSQL isolado em execução:
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:8125/evaluation
+```
+
+O retorno contém as métricas, os IDs avaliados e as limitações declaradas. A
+implementação não fabrica resultados para execuções que ainda não ocorreram.
+
+## Estado e limites conhecidos
+
+- A execução real com OpenAI registrada até esta etapa terminou com erro de
+  quota (`429`); ela não é contada como geração real bem-sucedida.
+- As execuções simuladas servem para verificar o fluxo e a persistência, não
+  para reivindicar qualidade de tradução.
+- Ainda não há harness de equivalência comportamental B–F em banco isolado;
+  `behavioral_equivalence_tested` permanece zero até que esses cenários sejam
+  realmente executados.
+- Modelo, versão do prompt e metadados de uso permanecem nos relatórios de
+  cada execução quando o provedor os disponibiliza.

@@ -81,6 +81,21 @@ async def finalize_run(
         await connection.commit()
 
 
+async def fetch_evaluation_runs(pool: AsyncConnectionPool) -> list[dict[str, object]]:
+    """Read terminal reports for evaluation without returning source or code."""
+    async with pool.connection() as connection, connection.cursor() as cursor:
+        await cursor.execute(
+            """
+            SELECT id, status, report
+              FROM modernization_history
+             WHERE status IN ('success', 'failure', 'partial')
+             ORDER BY id
+            """
+        )
+        rows = await cursor.fetchall()
+    return [{"id": int(row[0]), "status": row[1], "report": row[2]} for row in rows]
+
+
 @asynccontextmanager
 async def lifespan_pool() -> AsyncIterator[AsyncConnectionPool]:
     pool = make_pool()

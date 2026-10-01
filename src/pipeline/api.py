@@ -5,7 +5,8 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-from .db import create_pending_run, finalize_run, lifespan_pool
+from .db import create_pending_run, fetch_evaluation_runs, finalize_run, lifespan_pool
+from .evaluation import calculate_metrics
 from .graph import build_graph
 
 
@@ -36,6 +37,31 @@ async def health(request: Request) -> dict[str, str]:
     except Exception:  # noqa: BLE001 - API boundary must report DB health failure
         return JSONResponse(status_code=503, content={"status": "degraded"})
     return {"status": "ok"}
+
+
+@app.get("/evaluation")
+async def evaluation(request: Request) -> JSONResponse:
+    """Return reproducible metrics from all persisted terminal executions."""
+    pool = getattr(request.app.state, "db_pool", None)
+    if pool is None:
+        return JSONResponse(status_code=503, content={"status": "degraded"})
+    try:
+        records = await fetch_evaluation_runs(pool)
+        metrics = calculate_metrics(records)
+    except Exception:  # noqa: BLE001 - API boundary must report DB failure
+        return JSONResponse(status_code=503, content={"status": "degraded"})
+    return JSONResponse(
+        status_code=200,
+        content={
+            "metrics": metrics,
+            "evaluated_run_ids": [record["id"] for record in records],
+            "limitations": [
+                "Static approval does not establish behavioral equivalence.",
+                "Behavioral equivalence is counted only when a report explicitly marks it as tested.",
+                "The denominator includes terminal failures and simulated generations.",
+            ],
+        },
+    )
 
 
 @app.post("/modernize")
