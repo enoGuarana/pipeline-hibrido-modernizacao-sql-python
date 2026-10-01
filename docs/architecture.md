@@ -27,6 +27,29 @@ flowchart LR
     SQL --- N2
 ```
 
+## Diagrama de componentes e fronteiras
+
+```mermaid
+flowchart TB
+    Client[Cliente HTTP] --> API[pipeline.api]
+    API --> History[(PostgreSQL<br/>modernization_history)]
+    API --> Graph[pipeline.graph]
+    Graph --> Parse[pipeline.parsing]
+    Parse --> IR[IR tipada]
+    IR --> Analysis[Análise semântica]
+    Analysis --> Prompt[Contexto versionado]
+    Prompt --> Provider[Cliente OpenAI]
+    Provider --> Validation[ast.parse + Ruff]
+    Validation --> History
+    Graph --> Evaluation[pipeline.evaluation]
+    Evaluation --> History
+    Isolated[Harness comportamental isolado] -.não executado pela API.-> Evaluation
+```
+
+As setas pontilhadas representam uma fronteira de avaliação, não um caminho
+de produção. O comparador só deve receber observações capturadas em ambiente
+isolado e nunca inferir equivalência a partir da validação estática.
+
 ## Componentes e responsabilidades
 
 | Componente | Responsabilidade | Não é responsável por |

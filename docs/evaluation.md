@@ -32,6 +32,11 @@ implementação não fabrica resultados para execuções que ainda não ocorrera
 
 ## Estado e limites conhecidos
 
+O núcleo de avaliação já está disponível em `/evaluation` e o comparador
+comportamental isolado está em `pipeline.behavioral_evaluation`. O bônus de
+Eval está parcialmente implementado; Langfuse e equivalência B–F continuam
+pendentes porque ainda não há traces reais nem execução comparável autorizada.
+
 O núcleo do comparador comportamental foi implementado em
 `pipeline.behavioral_evaluation`. Ele compara retorno, estado das tabelas e
 erro observado. IDs, timestamps ou outros valores só são normalizados quando
