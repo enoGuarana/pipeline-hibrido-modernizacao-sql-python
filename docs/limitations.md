@@ -6,4 +6,5 @@
 - Nenhum código gerado é executado pela API.
 - `ast.parse` e linting demonstram validade estática, não equivalência comportamental.
 - A recuperação de uma queda de processo entre o registro `pending` e a finalização ainda não foi implementada.
-- Observabilidade externa e evaluation são bônus futuros e não são reivindicados sem evidência reproduzível.
+- O endpoint `/evaluation` e o comparador comportamental estão implementados, mas não existem ainda resultados de equivalência B–F.
+- A execução B–F depende de rotinas legadas instaladas no banco isolado, cenários aprovados e uma saída real para comparação.

@@ -32,6 +32,13 @@ implementação não fabrica resultados para execuções que ainda não ocorrera
 
 ## Estado e limites conhecidos
 
+O núcleo do comparador comportamental foi implementado em
+`pipeline.behavioral_evaluation`. Ele compara retorno, estado das tabelas e
+erro observado. IDs, timestamps ou outros valores só são normalizados quando
+o cenário os declara por caminho explícito; diferenças não declaradas continuam
+causando reprovação. O comparador não executa código gerado e não cria
+observações fictícias.
+
 - A execução real com OpenAI registrada até esta etapa terminou com erro de
   quota (`429`); ela não é contada como geração real bem-sucedida.
 - As execuções simuladas servem para verificar o fluxo e a persistência, não
@@ -39,5 +46,7 @@ implementação não fabrica resultados para execuções que ainda não ocorrera
 - Ainda não há harness de equivalência comportamental B–F em banco isolado;
   `behavioral_equivalence_tested` permanece zero até que esses cenários sejam
   realmente executados.
+- A execução B–F permanece bloqueada por falta de rotinas legadas instaladas,
+  fixtures de estado/entrada aprovadas e geração real disponível para comparar.
 - Modelo, versão do prompt e metadados de uso permanecem nos relatórios de
   cada execução quando o provedor os disponibiliza.
