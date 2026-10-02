@@ -58,8 +58,11 @@ identifica riscos, usa contexto estruturado no modelo e valida a saída com
                               │ persistir JSONB │
                               └─────────────────┘
 
- Qualquer falha em parsing, análise ou geração também segue diretamente para
- finalização com relatório e status controlado.
+ Falhas em parsing, análise ou geração deixam os próximos nós como
+ `stage_skipped` e seguem para a finalização. Portanto, o efeito é equivalente
+ a uma saída controlada para finalização, mas o relatório preserva cada etapa
+ ignorada para rastreabilidade. Falhas de validação podem entrar no reparo;
+ após uma única tentativa, seguem para finalização.
 ```
 
 O estado compartilhado é tipado em `pipeline.state`; contratos de entrada,
