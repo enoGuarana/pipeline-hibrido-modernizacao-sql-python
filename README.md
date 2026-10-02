@@ -1,51 +1,26 @@
 # Pipeline Híbrido de Modernização SQL → Python
 
-Implementação incremental do desafio técnico. A fatia atual entrega servidor, rotas, persistência, parsing/análise estrutural B–F, integração Gemini configurável e reparo limitado.
+Pipeline auditável para analisar rotinas PL/pgSQL, gerar uma proposta Python e
+validá-la sem esconder falhas ou afirmar equivalência sem evidência.
 
-## Arquitetura mínima
+> Estado atual: B/C possuem três cenários comportamentais equivalentes
+> registrados. D–F ainda precisam de validação comportamental.
+
+## Fluxo
 
 ```text
-POST /modernize
-       │
-       ▼
-LangGraph: parsing → análise semântica → geração → validação
-       │
-       ▼
-PostgreSQL: modernization_history
+POST /modernize → pending → parsing → análise → geração → validação
+                         └──────── PostgreSQL: modernization_history
 ```
 
-O estado compartilhado é `PipelineState`, um `TypedDict`. Os nós estão registrados em `langgraph.json`; a geração sem credencial é um stub explícito e a geração real depende de `GEMINI_API_KEY`. Nenhuma saída afirma equivalência sem teste comportamental.
+O pipeline preserva o SQL original, produz uma representação intermediária,
+identifica riscos, usa contexto estruturado no modelo e valida a saída com
+`ast.parse` e Ruff. O código gerado não é executado pela API.
 
-## Documentação de planejamento
+## Executar localmente
 
-- [Requisitos e critérios de aceite](docs/requirements.md)
-- [Plano de implementação](docs/implementation-plan.md)
-- [ADRs](docs/adr/ADR-001-arquitetura-inicial.md)
-
-## Estado atual e evidências
-
-- Geração real Gemini registrada nos artefatos `results/run-18` e `results/run-19`–`run-26`.
-- Avaliação reproduzível disponível em `scripts/evaluate_results.py`.
-- Comparação comportamental isolada B/C disponível em `scripts/run_behavioral_bc.py`.
-- O relatório `results/behavioral-bc.json` registra 3 de 3 cenários equivalentes,
-  incluindo retorno, estado das tabelas, auditoria e erro semântico.
-- D–F ainda não possuem equivalência comportamental publicada; Langfuse ainda
-  não foi integrado.
-
-Para reproduzir a comparação B/C com o PostgreSQL do Compose:
-
-```powershell
-.venv\Scripts\python.exe scripts\run_behavioral_bc.py `
-  --database-url "postgresql://postgres:postgres@localhost:55432/modernization"
-```
-
-O schema usado pelo harness é temporário e removido ao final. A validade
-estática (`ast.parse` e Ruff) não é tratada como equivalência comportamental.
-- [Instruções para agentes](AGENTS.md)
-
-## Execução prevista
-
-Requer Python 3.14, PostgreSQL e as dependências fixadas no `pyproject.toml`. O Compose usa a porta externa `55432`; a chave Gemini é opcional para o modo simulado e necessária para geração real.
+Pré-requisitos: Python 3.14, Docker Desktop com Compose e uma chave Gemini
+somente quando a geração real for necessária.
 
 ```powershell
 py -3.14 -m venv .venv
@@ -56,19 +31,86 @@ $env:DATABASE_URL = "postgresql://postgres:postgres@localhost:55432/modernizatio
 langgraph dev --no-browser
 ```
 
-Para geração real, configure `GEMINI_API_KEY` e opcionalmente `GEMINI_MODEL`. O
-padrão verificado é `gemini-3.5-flash-lite`. Nunca registre a chave em arquivos
-versionados ou logs; o `.env` local é ignorado pelo Git.
+Verifique a API:
 
-## Limitação importante
+```powershell
+Invoke-RestMethod http://127.0.0.1:8125/health
+Invoke-RestMethod http://127.0.0.1:8125/evaluation
+```
 
-`ast.parse` ou lint isolado não demonstram equivalência. A comprovação exigirá testes comportamentais com entradas e estados de banco controlados, comparando procedure original e código gerado, inclusive erros, transações, NULLs e efeitos colaterais.
+Para geração real, configure a chave apenas no ambiente:
 
-## Estado da primeira fatia
+```powershell
+$env:GEMINI_API_KEY = "sua-chave-local"
+$env:GEMINI_MODEL = "gemini-3.5-flash-lite"
+```
 
-O fluxo Anexo B está executável pelo grafo e pela rota `/modernize`, com
-persistência de sucesso/falha. O `run_id=18` produziu geração real com
-`gemini-3.5-flash-lite`, prompt `modernize_v3` e aprovação de `ast.parse` e
-Ruff na primeira tentativa. O artefato está em `results/run-18`. Essa evidência
-é de validade estática, não de equivalência comportamental. Sem chave, os
-testes e o desenvolvimento continuam usando um stub explicitamente simulado.
+Nunca versione a chave nem a envie no corpo da requisição.
+
+## Usar a API
+
+```powershell
+$body = @{source_code = (Get-Content fixtures/B.sql -Raw); schema = $null} | ConvertTo-Json
+Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8125/modernize -ContentType "application/json" -Body $body
+```
+
+A resposta contém `run_id`, `status`, código quando disponível e relatório por
+etapa. Os status possíveis são `success`, `failure`, `partial` e `pending`.
+
+## Testar e avaliar
+
+```powershell
+.venv\Scripts\python.exe -m pytest -q
+.venv\Scripts\ruff.exe check src tests scripts
+.venv\Scripts\python.exe scripts/evaluate_results.py --results-dir results
+```
+
+Comparação comportamental isolada de B/C:
+
+```powershell
+.venv\Scripts\python.exe scripts/run_behavioral_bc.py --database-url "postgresql://postgres:postgres@localhost:55432/modernization"
+```
+
+O harness usa schema temporário, compara a rotina original com o Python gerado
+e remove o schema ao terminar. A evidência está em
+`results/behavioral-bc.json`.
+
+## Decisões e trade-offs
+
+- **Monólito modular:** reduz operação e mantém fronteiras claras; ainda há um
+  processo central.
+- **LangGraph CLI:** atende ao servidor exigido e organiza o fluxo por nós; a
+  combinação de versões do runtime tem limitações documentadas.
+- **PostgreSQL:** preserva tipos, queries, locking e transações; exige banco
+  disponível localmente.
+- **Gemini com prompt versionado:** permite geração rastreável; a saída ainda
+  pode conter erros semânticos.
+- **Parsing híbrido:** preserva SQL e marca construções desconhecidas; não é
+  uma AST completa de PL/pgSQL.
+- **Um único reparo:** limita custo e ciclos infinitos; uma saída inválida é
+  preservada como falha.
+
+Detalhes estão em [docs/architecture.md](docs/architecture.md) e nos
+[ADRs](docs/adr/).
+
+## Limitações e próximos passos
+
+- Validade estática não prova equivalência.
+- B/C têm três cenários equivalentes; D–F ainda não têm comparação executada.
+- D/F possuem falhas de validação estática documentadas; E tem riscos semânticos
+  ainda não testados.
+- A dependência Python do Anexo F e a integração Langfuse estão pendentes.
+- Recuperação automática de crashes não está implementada.
+
+Com mais tempo: corrigir D/F, implementar F por injeção de dependência, criar
+cenários comportamentais D–F, integrar Langfuse com traces reais e reproduzir a
+entrega em ambiente limpo.
+
+## Documentação
+
+- [Índice de documentos](docs/README.md)
+- [Requisitos e aceite](docs/requirements.md)
+- [Plano de implementação](docs/implementation-plan.md)
+- [Avaliação](docs/evaluation.md)
+- [Runbook](docs/runbook.md)
+- [Guia de integração](docs/integration-guide.md)
