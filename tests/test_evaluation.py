@@ -1,4 +1,5 @@
 from pipeline.evaluation import calculate_metrics
+from scripts.evaluate_results import build_evaluation, load_exported_records
 
 
 def _report(*, attempts: int, valid: bool, mode: str, errors=None, equivalence="not_tested"):
@@ -43,3 +44,22 @@ def test_metrics_keep_failures_and_simulated_runs_in_denominator():
         "simulated_generations": 1,
         "real_generation_runs": 1,
     }
+
+
+def test_exported_results_loader_uses_only_complete_runs(tmp_path):
+    run_dir = tmp_path / "run-23"
+    run_dir.mkdir()
+    (run_dir / "report.json").write_text(
+        '{"traceability": {"generation_attempts": 1}, "stages": [], "errors": [], '
+        '"generation_mode": "gemini"}',
+        encoding="utf-8",
+    )
+    (run_dir / "metadata.json").write_text('{"run_id": 23}', encoding="utf-8")
+    incomplete = tmp_path / "run-24"
+    incomplete.mkdir()
+
+    records, run_ids = load_exported_records(tmp_path)
+
+    assert len(records) == 1
+    assert run_ids == [23]
+    assert build_evaluation(tmp_path)["denominator"] == 1

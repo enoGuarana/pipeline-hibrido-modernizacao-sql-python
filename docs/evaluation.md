@@ -27,6 +27,18 @@ Com o servidor e o PostgreSQL isolado em execução:
 Invoke-RestMethod http://127.0.0.1:8125/evaluation
 ```
 
+Também é possível reproduzir a avaliação diretamente sobre os artefatos
+versionados, sem servidor ou banco:
+
+```powershell
+.venv\Scripts\python.exe scripts\evaluate_results.py --results-dir results
+```
+
+O script inclui somente diretórios `run-*` completos, informa o denominador e
+lista os IDs avaliados. Na rodada registrada, o conjunto exportado contém os
+runs 11 e 17–26; o endpoint continua sendo a fonte das métricas de todo o
+histórico persistido.
+
 O retorno contém as métricas, os IDs avaliados e as limitações declaradas. A
 implementação não fabrica resultados para execuções que ainda não ocorreram.
 

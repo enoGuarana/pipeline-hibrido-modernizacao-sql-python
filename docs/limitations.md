@@ -7,6 +7,7 @@
 - `ast.parse` e linting demonstram validade estática, não equivalência comportamental.
 - A recuperação de uma queda de processo entre o registro `pending` e a finalização ainda não foi implementada.
 - O endpoint `/evaluation` e o comparador comportamental estão implementados, mas não existem ainda resultados de equivalência B–F.
+- `scripts/evaluate_results.py` reproduz as métricas sobre artefatos exportados; ele não executa código gerado e não substitui o comparativo no PostgreSQL.
 - A execução B–F depende de rotinas legadas instaladas no banco isolado, cenários aprovados e uma saída real para comparação.
 - O `gemini-3.8-flash` apresentou indisponibilidade recorrente. O padrão foi
   alterado para `gemini-3.5-flash-lite` depois de uma sondagem real e da
