@@ -1,0 +1,138 @@
+{
+  "errors": [
+    {
+      "code": "VALIDATION_LINT",
+      "stage": "validation",
+      "message": "I001 [*] Import block is un-sorted or un-formatted\n --> generated.py:1:1\n  |\n1 | / import psycopg\n2 | | from decimal import Decimal\n  | |___________________________^\nhelp: Organize imports\n  |\n  - import psycopg\n1 | from decimal import Decimal\n2 |\n3 + import psycopg\n4 +\n5 |\n  |\n\nFound 1 error.\n[*] 1 fixable with the `--fix` option.\n",
+      "recoverable": false
+    }
+  ],
+  "stages": [
+    {
+      "stage": "parsing",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "routine_wrapper",
+        "dollar_quoted_body",
+        "parameters",
+        "variables",
+        "operations",
+        "tables"
+      ],
+      "warnings": [
+        "body parsing is structural classification, not a complete PL/pgSQL AST"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "semantic_analysis",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "routine=fn_saldo_cliente",
+        "parameters=1",
+        "variables=1",
+        "operation=select",
+        "operation=function_call",
+        "table=contas"
+      ],
+      "warnings": [],
+      "decisions": [
+        "Preserve NUMERIC semantics and distinguish facts from inferences"
+      ],
+      "duration_ms": null
+    },
+    {
+      "stage": "generation",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [],
+      "decisions": [
+        "Use Gemini API with versioned context"
+      ],
+      "duration_ms": null
+    },
+    {
+      "stage": "validation",
+      "errors": [
+        {
+          "code": "VALIDATION_LINT",
+          "stage": "validation",
+          "message": "I001 [*] Import block is un-sorted or un-formatted\n --> generated.py:1:1\n  |\n1 | / from decimal import Decimal\n2 | | import psycopg\n  | |______________^\nhelp: Organize imports\n  |\n1 | from decimal import Decimal\n2 +\n3 | import psycopg\n  |\n\nFound 1 error.\n[*] 1 fixable with the `--fix` option.\n",
+          "recoverable": false
+        }
+      ],
+      "status": "failure",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "repair",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [
+        "previous generated code and validation report were preserved"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "validation",
+      "errors": [
+        {
+          "code": "VALIDATION_LINT",
+          "stage": "validation",
+          "message": "I001 [*] Import block is un-sorted or un-formatted\n --> generated.py:1:1\n  |\n1 | / import psycopg\n2 | | from decimal import Decimal\n  | |___________________________^\nhelp: Organize imports\n  |\n  - import psycopg\n1 | from decimal import Decimal\n2 |\n3 + import psycopg\n4 +\n5 |\n  |\n\nFound 1 error.\n[*] 1 fixable with the `--fix` option.\n",
+          "recoverable": false
+        }
+      ],
+      "status": "failure",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "finalization",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    }
+  ],
+  "equivalence": "not_tested",
+  "traceability": {
+    "run_id": 17,
+    "schema_sha256": null,
+    "source_sha256": "21c154990dce863c48edd7e577fa2b9149515e04b145e44c6a7ae3837bade76c",
+    "generation_attempts": 2,
+    "generated_code_sha256": "5a78978f6a7e3e90a96116b64f6b6e75ae749106de387c06c5288d6c3d23f801"
+  },
+  "generation_mode": "gemini",
+  "generation_metadata": {
+    "model": "gemini-3.5-flash-lite",
+    "usage": {
+      "total_token_count": 986,
+      "prompt_token_count": 851,
+      "prompt_tokens_details": [
+        {
+          "modality": "TEXT",
+          "token_count": 851
+        }
+      ],
+      "candidates_token_count": 135
+    },
+    "provider": "gemini",
+    "repaired": true,
+    "response_id": "BTG_aveTN-CxqtsPtaqTkQg",
+    "prompt_version": "modernize_v2"
+  }
+}

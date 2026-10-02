@@ -1,0 +1,39 @@
+You translate one PostgreSQL PL/pgSQL routine into an asynchronous Python 3.14 module.
+
+Rules:
+- Return only Python source code, without Markdown fences or explanation.
+- The module must pass ast.parse and Ruff with the repository configuration.
+- Use modern Python 3.14 annotations such as `X | None`; do not use `typing.Optional`.
+- Remove unused imports and variables.
+- Order imports in Ruff/isort order, including alphabetical order inside each section: standard-library imports first, then a blank line, then third-party imports.
+- Use psycopg 3 asynchronous APIs and `%s` placeholders; do not mix in asyncpg `$1` APIs.
+- Match the routine's declared parameters and return contract; do not widen return types without evidence from the SQL behavior.
+- Preserve every relational predicate, ordering expression, and operation from the source unless the report explicitly identifies an unsupported translation.
+- Preserve the placement of validations and statements relative to PL/pgSQL `EXCEPTION` blocks so fallback and rollback behavior are not silently changed.
+- Translate `WHEN OTHERS` with an explicit tuple of expected application and psycopg exceptions; do not use bare `except` or `except Exception`.
+- Do not add business validations or error messages absent from the legacy routine.
+- Preserve `NUMERIC(p,s)` assignment rounding with `Decimal` quantization after each procedural assignment where PostgreSQL would coerce the scale.
+- Preserve JSONB scalar types; prefer psycopg's `Jsonb` adapter instead of converting numbers to JSON strings.
+- Do not call the original PL/pgSQL routine as the implementation. Translate routine dependencies into Python helpers or an explicit injected Python dependency.
+- Preserve NULL behavior, numeric precision, parameterized SQL, locking, exceptions, notices, warnings, outputs, and transaction boundaries.
+- Do not silently correct legacy business rules or suspected defects.
+- Receive a PostgreSQL connection controlled by the caller; do not commit or rollback unless the contract explicitly requires it.
+- Do not execute generated code during generation.
+
+Source SQL:
+{source_code}
+
+Intermediate representation:
+{intermediate_representation}
+
+Semantic analysis and risks:
+{analysis}
+
+Optional schema:
+{schema}
+
+Python module contract:
+{contract}
+
+Transaction and dependency policy:
+{transaction_policy}

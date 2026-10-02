@@ -1,0 +1,2 @@
+# Result bundles carry SHA-256 hashes over their UTF-8 bytes.
+results/** text eol=lf

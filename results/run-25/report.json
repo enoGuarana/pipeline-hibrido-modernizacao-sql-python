@@ -1,0 +1,146 @@
+{
+  "errors": [
+    {
+      "code": "VALIDATION_LINT",
+      "stage": "validation",
+      "message": "I001 [*] Import block is un-sorted or un-formatted\n --> generated.py:1:1\n  |\n1 | / from datetime import date\n2 | | from decimal import Decimal, ROUND_HALF_UP\n3 | | import psycopg\n4 | | from psycopg.types.json import Jsonb\n  | |____________________________________^\nhelp: Organize imports\n  |\n1 | from datetime import date\n  - from decimal import Decimal, ROUND_HALF_UP\n2 + from decimal import ROUND_HALF_UP, Decimal\n3 +\n4 | import psycopg\n  |\n\nPYI041 [*] Use `float` instead of `int | float`\n --> generated.py:7:27\n  |\n7 | def _quantize_18_2(value: Decimal | int | float | None) -> Decimal:\n  |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n8 |     if value is None:\n9 |         return Decimal(\"0.00\")\n  |\nhelp: Remove redundant type\n  |\n6 |\n  - def _quantize_18_2(value: Decimal | int | float | None) -> Decimal:\n7 + def _quantize_18_2(value: Decimal | float | None) -> Decimal:\n8 |     if value is None:\n  |\n\nPYI041 [*] Use `float` instead of `int | float`\n  --> generated.py:13:26\n   |\n13 | def _quantize_7_4(value: Decimal | int | float | None) -> Decimal:\n   |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n14 |     if value is None:\n15 |         return Decimal(\"0.0000\")\n   |\nhelp: Remove redundant type\n   |\n12 |\n   - def _quantize_7_4(value: Decimal | int | float | None) -> Decimal:\n13 + def _quantize_7_4(value: Decimal | float | None) -> Decimal:\n14 |     if value is None:\n   |\n\nFound 3 errors.\n[*] 3 fixable with the `--fix` option.\n",
+      "recoverable": false
+    }
+  ],
+  "stages": [
+    {
+      "stage": "parsing",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "routine_wrapper",
+        "dollar_quoted_body",
+        "parameters",
+        "variables",
+        "operations",
+        "tables"
+      ],
+      "warnings": [
+        "body parsing is structural classification, not a complete PL/pgSQL AST"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "semantic_analysis",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "routine=sp_processar_lote_taxas",
+        "parameters=1",
+        "variables=10",
+        "operation=select",
+        "operation=insert",
+        "operation=update",
+        "operation=cursor",
+        "operation=loop",
+        "operation=jsonb",
+        "operation=function_call",
+        "table=contas",
+        "table=log_auditoria",
+        "table=taxas",
+        "table=transacoes"
+      ],
+      "warnings": [],
+      "decisions": [
+        "Preserve NUMERIC semantics and distinguish facts from inferences"
+      ],
+      "duration_ms": null
+    },
+    {
+      "stage": "generation",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [],
+      "decisions": [
+        "Use Gemini API with versioned context"
+      ],
+      "duration_ms": null
+    },
+    {
+      "stage": "validation",
+      "errors": [
+        {
+          "code": "VALIDATION_SYNTAX",
+          "stage": "validation",
+          "message": "'(' was never closed (generated.py, line 39)",
+          "recoverable": false
+        }
+      ],
+      "status": "failure",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "repair",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [
+        "previous generated code and validation report were preserved"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "validation",
+      "errors": [
+        {
+          "code": "VALIDATION_LINT",
+          "stage": "validation",
+          "message": "I001 [*] Import block is un-sorted or un-formatted\n --> generated.py:1:1\n  |\n1 | / from datetime import date\n2 | | from decimal import Decimal, ROUND_HALF_UP\n3 | | import psycopg\n4 | | from psycopg.types.json import Jsonb\n  | |____________________________________^\nhelp: Organize imports\n  |\n1 | from datetime import date\n  - from decimal import Decimal, ROUND_HALF_UP\n2 + from decimal import ROUND_HALF_UP, Decimal\n3 +\n4 | import psycopg\n  |\n\nPYI041 [*] Use `float` instead of `int | float`\n --> generated.py:7:27\n  |\n7 | def _quantize_18_2(value: Decimal | int | float | None) -> Decimal:\n  |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n8 |     if value is None:\n9 |         return Decimal(\"0.00\")\n  |\nhelp: Remove redundant type\n  |\n6 |\n  - def _quantize_18_2(value: Decimal | int | float | None) -> Decimal:\n7 + def _quantize_18_2(value: Decimal | float | None) -> Decimal:\n8 |     if value is None:\n  |\n\nPYI041 [*] Use `float` instead of `int | float`\n  --> generated.py:13:26\n   |\n13 | def _quantize_7_4(value: Decimal | int | float | None) -> Decimal:\n   |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n14 |     if value is None:\n15 |         return Decimal(\"0.0000\")\n   |\nhelp: Remove redundant type\n   |\n12 |\n   - def _quantize_7_4(value: Decimal | int | float | None) -> Decimal:\n13 + def _quantize_7_4(value: Decimal | float | None) -> Decimal:\n14 |     if value is None:\n   |\n\nFound 3 errors.\n[*] 3 fixable with the `--fix` option.\n",
+          "recoverable": false
+        }
+      ],
+      "status": "failure",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "finalization",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    }
+  ],
+  "equivalence": "not_tested",
+  "traceability": {
+    "run_id": 25,
+    "schema_sha256": "e89b98c1501d8b0f2ee0301a8c74fd9275e9da45c8f0907dd3a0ec7b40fbd5a5",
+    "source_sha256": "4a69140bf3db21e31bf822defbf38c301aaa0e39d7df2f8a4dbb98502324340c",
+    "generation_attempts": 2,
+    "generated_code_sha256": "c83a9e990ce4db3f353906995fdf9c36f640e74af7c912f9e598448dbdfacd05"
+  },
+  "generation_mode": "gemini",
+  "generation_metadata": {
+    "model": "gemini-3.5-flash-lite",
+    "usage": {
+      "total_token_count": 5049,
+      "prompt_token_count": 3861,
+      "prompt_tokens_details": [
+        {
+          "modality": "TEXT",
+          "token_count": 3861
+        }
+      ],
+      "candidates_token_count": 1188
+    },
+    "provider": "gemini",
+    "repaired": true,
+    "response_id": "qzS_ateeN_rUz7IPzY3X-QI",
+    "prompt_version": "modernize_v4"
+  }
+}

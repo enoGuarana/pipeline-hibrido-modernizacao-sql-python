@@ -1,0 +1,144 @@
+{
+  "errors": [
+    {
+      "code": "VALIDATION_LINT",
+      "stage": "validation",
+      "message": "I001 [*] Import block is un-sorted or un-formatted\n --> generated.py:1:1\n  |\n1 | / import datetime\n2 | | from decimal import Decimal\n3 | | import logging\n  | |______________^\n4 |\n5 |   logger = logging.getLogger(__name__)\n  |\nhelp: Organize imports\n  |\n1 | import datetime\n2 + import logging\n3 | from decimal import Decimal\n  - import logging\n4 |\n  |\n\nBLE001 Do not catch blind exception: `Exception`\n  --> generated.py:65:12\n   |\n63 |         return result\n64 |\n65 |     except Exception as e:\n   |            ^^^^^^^^^\n66 |         logger.warning(\"Falha ao gerar relatorio: %s. Retornando linha de fallback.\", e)\n67 |         fallback_mes = datetime.datetime.combine(p_data_inicio, datetime.time.min).replace(day=1).date()\n   |\n\nFound 2 errors.\n[*] 1 fixable with the `--fix` option.\n",
+      "recoverable": false
+    }
+  ],
+  "stages": [
+    {
+      "stage": "parsing",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "routine_wrapper",
+        "dollar_quoted_body",
+        "parameters",
+        "variables",
+        "operations",
+        "tables"
+      ],
+      "warnings": [
+        "body parsing is structural classification, not a complete PL/pgSQL AST"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "semantic_analysis",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "routine=sp_relatorio_mensal_cliente",
+        "parameters=3",
+        "variables=1",
+        "operation=select",
+        "operation=cte_recursive",
+        "operation=exception",
+        "operation=raise",
+        "operation=function_call",
+        "table=contas",
+        "table=meses",
+        "table=movimento",
+        "table=transacoes"
+      ],
+      "warnings": [],
+      "decisions": [
+        "Preserve NUMERIC semantics and distinguish facts from inferences"
+      ],
+      "duration_ms": null
+    },
+    {
+      "stage": "generation",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [],
+      "decisions": [
+        "Use Gemini API with versioned context"
+      ],
+      "duration_ms": null
+    },
+    {
+      "stage": "validation",
+      "errors": [
+        {
+          "code": "VALIDATION_LINT",
+          "stage": "validation",
+          "message": "I001 [*] Import block is un-sorted or un-formatted\n --> generated.py:1:1\n  |\n1 | / import datetime\n2 | | from decimal import Decimal\n3 | | import logging\n  | |______________^\n4 |\n5 |   async def fn_saldo_cliente(conn, p_cliente_id: int) -> Decimal | None:\n  |\nhelp: Organize imports\n  |\n1 | import datetime\n2 + import logging\n3 | from decimal import Decimal\n  - import logging\n4 |\n5 +\n6 | async def fn_saldo_cliente(conn, p_cliente_id: int) -> Decimal | None:\n  |\n\nLOG015 `info()` call on root logger\n  --> generated.py:23:9\n   |\n21 |     try:\n22 |         v_saldo_atual = await fn_saldo_cliente(conn, p_cliente_id)\n23 |         logging.info(\"Saldo atual do cliente %s: %s\", p_cliente_id, v_saldo_atual)\n   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n24 |\n25 |         query = \"\"\"\n   |\nhelp: Use own logger instead\n\nBLE001 Do not catch blind exception: `Exception`\n  --> generated.py:61:12\n   |\n59 |         return result\n60 |\n61 |     except Exception as e:\n   |            ^^^^^^^^^\n62 |         logging.warning(\"Falha ao gerar relatorio: %s. Retornando linha de fallback.\", e)\n63 |         fallback_mes = datetime.datetime.combine(p_data_inicio, datetime.time.min).replace(day=1).date()\n   |\n\nLOG015 `warning()` call on root logger\n  --> generated.py:62:9\n   |\n61 |     except Exception as e:\n62 |         logging.warning(\"Falha ao gerar relatorio: %s. Retornando linha de fallback.\", e)\n   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n63 |         fallback_mes = datetime.datetime.combine(p_data_inicio, datetime.time.min).replace(day=1).date()\n64 |         fallback_saldo = v_saldo_atual if v_saldo_atual is not None else Decimal(\"0.00\")\n   |\nhelp: Use own logger instead\n\nFound 4 errors.\n[*] 1 fixable with the `--fix` option.\n",
+          "recoverable": false
+        }
+      ],
+      "status": "failure",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "repair",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [
+        "previous generated code and validation report were preserved"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "validation",
+      "errors": [
+        {
+          "code": "VALIDATION_LINT",
+          "stage": "validation",
+          "message": "I001 [*] Import block is un-sorted or un-formatted\n --> generated.py:1:1\n  |\n1 | / import datetime\n2 | | from decimal import Decimal\n3 | | import logging\n  | |______________^\n4 |\n5 |   logger = logging.getLogger(__name__)\n  |\nhelp: Organize imports\n  |\n1 | import datetime\n2 + import logging\n3 | from decimal import Decimal\n  - import logging\n4 |\n  |\n\nBLE001 Do not catch blind exception: `Exception`\n  --> generated.py:65:12\n   |\n63 |         return result\n64 |\n65 |     except Exception as e:\n   |            ^^^^^^^^^\n66 |         logger.warning(\"Falha ao gerar relatorio: %s. Retornando linha de fallback.\", e)\n67 |         fallback_mes = datetime.datetime.combine(p_data_inicio, datetime.time.min).replace(day=1).date()\n   |\n\nFound 2 errors.\n[*] 1 fixable with the `--fix` option.\n",
+          "recoverable": false
+        }
+      ],
+      "status": "failure",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "finalization",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    }
+  ],
+  "equivalence": "not_tested",
+  "traceability": {
+    "run_id": 22,
+    "schema_sha256": "e89b98c1501d8b0f2ee0301a8c74fd9275e9da45c8f0907dd3a0ec7b40fbd5a5",
+    "source_sha256": "d216a5efc688b5d8a46e318ef696eade67ac2085928c929af1cf2f44509cb0d1",
+    "generation_attempts": 2,
+    "generated_code_sha256": "b223e2572d87c55f90ed5106a21a042e069356dd867c847a72d8cc6af9453739"
+  },
+  "generation_mode": "gemini",
+  "generation_metadata": {
+    "model": "gemini-3.5-flash-lite",
+    "usage": {
+      "total_token_count": 4567,
+      "prompt_token_count": 3666,
+      "prompt_tokens_details": [
+        {
+          "modality": "TEXT",
+          "token_count": 3666
+        }
+      ],
+      "candidates_token_count": 901
+    },
+    "provider": "gemini",
+    "repaired": true,
+    "response_id": "NzS_aoyfEMbrz7IPsYeO2A4",
+    "prompt_version": "modernize_v3"
+  }
+}

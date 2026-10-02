@@ -1,0 +1,144 @@
+{
+  "errors": [
+    {
+      "code": "VALIDATION_LINT",
+      "stage": "validation",
+      "message": "UP045 [*] Use `X | None` for type annotations\n --> generated.py:5:53\n  |\n5 | async def fn_saldo_cliente(conn: Any, p_cliente_id: Optional[int]) -> Decimal:\n  |                                                     ^^^^^^^^^^^^^\n6 |     if hasattr(conn, \"fetchval\"):\n7 |         query = \"\"\"\n  |\nhelp: Convert to `X | None`\n  |\n4 |\n  - async def fn_saldo_cliente(conn: Any, p_cliente_id: Optional[int]) -> Decimal:\n5 + async def fn_saldo_cliente(conn: Any, p_cliente_id: int | None) -> Decimal:\n6 |     if hasattr(conn, \"fetchval\"):\n  |\n\nFound 1 error.\n[*] 1 fixable with the `--fix` option.\n",
+      "recoverable": false
+    },
+    {
+      "code": "LLM_REPAIR",
+      "stage": "repair",
+      "message": "Gemini request failed: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+      "recoverable": false
+    }
+  ],
+  "stages": [
+    {
+      "stage": "parsing",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "routine_wrapper",
+        "dollar_quoted_body",
+        "parameters",
+        "variables",
+        "operations",
+        "tables"
+      ],
+      "warnings": [
+        "body parsing is structural classification, not a complete PL/pgSQL AST"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "semantic_analysis",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "routine=fn_saldo_cliente",
+        "parameters=1",
+        "variables=1",
+        "operation=select",
+        "operation=function_call",
+        "table=contas"
+      ],
+      "warnings": [],
+      "decisions": [
+        "Preserve NUMERIC semantics and distinguish facts from inferences"
+      ],
+      "duration_ms": null
+    },
+    {
+      "stage": "generation",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [],
+      "decisions": [
+        "Use Gemini API with versioned context"
+      ],
+      "duration_ms": null
+    },
+    {
+      "stage": "validation",
+      "errors": [
+        {
+          "code": "VALIDATION_LINT",
+          "stage": "validation",
+          "message": "UP045 [*] Use `X | None` for type annotations\n --> generated.py:5:53\n  |\n5 | async def fn_saldo_cliente(conn: Any, p_cliente_id: Optional[int]) -> Decimal:\n  |                                                     ^^^^^^^^^^^^^\n6 |     if hasattr(conn, \"fetchval\"):\n7 |         query = \"\"\"\n  |\nhelp: Convert to `X | None`\n  |\n4 |\n  - async def fn_saldo_cliente(conn: Any, p_cliente_id: Optional[int]) -> Decimal:\n5 + async def fn_saldo_cliente(conn: Any, p_cliente_id: int | None) -> Decimal:\n6 |     if hasattr(conn, \"fetchval\"):\n  |\n\nFound 1 error.\n[*] 1 fixable with the `--fix` option.\n",
+          "recoverable": false
+        }
+      ],
+      "status": "failure",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "repair",
+      "errors": [
+        {
+          "code": "LLM_REPAIR",
+          "stage": "repair",
+          "message": "Gemini request failed: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}",
+          "recoverable": false
+        }
+      ],
+      "status": "failure",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "validation",
+      "errors": [],
+      "status": "failure",
+      "findings": [],
+      "warnings": [
+        "stage_skipped"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "finalization",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    }
+  ],
+  "equivalence": "not_tested",
+  "traceability": {
+    "run_id": 11,
+    "schema_sha256": null,
+    "source_sha256": "21c154990dce863c48edd7e577fa2b9149515e04b145e44c6a7ae3837bade76c",
+    "generation_attempts": 1,
+    "generated_code_sha256": "9416f322b058fdd241b2c93faee57c56a6c48a1f160a3b28274d41aec6b9660f"
+  },
+  "generation_mode": "gemini",
+  "generation_metadata": {
+    "model": "gemini-3.8-flash",
+    "usage": {
+      "total_token_count": 2384,
+      "prompt_token_count": 490,
+      "thoughts_token_count": 1622,
+      "prompt_tokens_details": [
+        {
+          "modality": "TEXT",
+          "token_count": 490
+        }
+      ],
+      "candidates_token_count": 272
+    },
+    "provider": "gemini",
+    "response_id": "gC2_asX_Lb2Ez7IP3tSa6Qg",
+    "prompt_version": "modernize_v1"
+  }
+}

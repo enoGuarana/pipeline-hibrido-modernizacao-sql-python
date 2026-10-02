@@ -1,0 +1,136 @@
+{
+  "errors": [],
+  "stages": [
+    {
+      "stage": "parsing",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "routine_wrapper",
+        "dollar_quoted_body",
+        "parameters",
+        "variables",
+        "operations",
+        "tables"
+      ],
+      "warnings": [
+        "body parsing is structural classification, not a complete PL/pgSQL AST"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "semantic_analysis",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "routine=sp_atualizar_status_contas_inativas",
+        "parameters=2",
+        "variables=0",
+        "operation=select",
+        "operation=insert",
+        "operation=update",
+        "operation=exception",
+        "operation=raise",
+        "operation=jsonb",
+        "operation=function_call",
+        "table=contas",
+        "table=log_auditoria",
+        "table=transacoes"
+      ],
+      "warnings": [],
+      "decisions": [
+        "Preserve NUMERIC semantics and distinguish facts from inferences"
+      ],
+      "duration_ms": null
+    },
+    {
+      "stage": "generation",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [],
+      "decisions": [
+        "Use Gemini API with versioned context"
+      ],
+      "duration_ms": null
+    },
+    {
+      "stage": "validation",
+      "errors": [
+        {
+          "code": "VALIDATION_LINT",
+          "stage": "validation",
+          "message": "I001 [*] Import block is un-sorted or un-formatted\n --> generated.py:1:1\n  |\n1 | / import json\n2 | | from psycopg import AsyncConnection\n  | |___________________________________^\nhelp: Organize imports\n  |\n1 | import json\n2 +\n3 | from psycopg import AsyncConnection\n  |\n\nFound 1 error.\n[*] 1 fixable with the `--fix` option.\n",
+          "recoverable": false
+        }
+      ],
+      "status": "failure",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "repair",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [
+        "previous generated code and validation report were preserved"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "validation",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "ast_parse=passed",
+        "lint=passed"
+      ],
+      "warnings": [
+        "static validation does not establish equivalence"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "finalization",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    }
+  ],
+  "equivalence": "not_tested",
+  "traceability": {
+    "run_id": 19,
+    "schema_sha256": "e89b98c1501d8b0f2ee0301a8c74fd9275e9da45c8f0907dd3a0ec7b40fbd5a5",
+    "source_sha256": "a835dc99f09638c357605548741c400637390766f1ba3b12f5dc510c402e6568",
+    "generation_attempts": 2,
+    "generated_code_sha256": "004700172292b975e78e3494e88df1966f87524d681404269e15ae87e593acea"
+  },
+  "generation_mode": "gemini",
+  "generation_metadata": {
+    "model": "gemini-3.5-flash-lite",
+    "usage": {
+      "total_token_count": 2407,
+      "prompt_token_count": 2079,
+      "prompt_tokens_details": [
+        {
+          "modality": "TEXT",
+          "token_count": 2079
+        }
+      ],
+      "candidates_token_count": 328
+    },
+    "provider": "gemini",
+    "repaired": true,
+    "response_id": "IzS_at2LCa3Qz7IPnou04QI",
+    "prompt_version": "modernize_v3"
+  }
+}

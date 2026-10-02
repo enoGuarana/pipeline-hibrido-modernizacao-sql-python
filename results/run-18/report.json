@@ -1,0 +1,101 @@
+{
+  "errors": [],
+  "stages": [
+    {
+      "stage": "parsing",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "routine_wrapper",
+        "dollar_quoted_body",
+        "parameters",
+        "variables",
+        "operations",
+        "tables"
+      ],
+      "warnings": [
+        "body parsing is structural classification, not a complete PL/pgSQL AST"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "semantic_analysis",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "routine=fn_saldo_cliente",
+        "parameters=1",
+        "variables=1",
+        "operation=select",
+        "operation=function_call",
+        "table=contas"
+      ],
+      "warnings": [],
+      "decisions": [
+        "Preserve NUMERIC semantics and distinguish facts from inferences"
+      ],
+      "duration_ms": null
+    },
+    {
+      "stage": "generation",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [],
+      "decisions": [
+        "Use Gemini API with versioned context"
+      ],
+      "duration_ms": null
+    },
+    {
+      "stage": "validation",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "ast_parse=passed",
+        "lint=passed"
+      ],
+      "warnings": [
+        "static validation does not establish equivalence"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "finalization",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    }
+  ],
+  "equivalence": "not_tested",
+  "traceability": {
+    "run_id": 18,
+    "schema_sha256": null,
+    "source_sha256": "21c154990dce863c48edd7e577fa2b9149515e04b145e44c6a7ae3837bade76c",
+    "generation_attempts": 1,
+    "generated_code_sha256": "f9b19639cacbbb45fe3ff1f6ffb3bddd8985ddabf441d8d0fad17863172981f4"
+  },
+  "generation_mode": "gemini",
+  "generation_metadata": {
+    "model": "gemini-3.5-flash-lite",
+    "usage": {
+      "total_token_count": 745,
+      "prompt_token_count": 596,
+      "prompt_tokens_details": [
+        {
+          "modality": "TEXT",
+          "token_count": 596
+        }
+      ],
+      "candidates_token_count": 149
+    },
+    "provider": "gemini",
+    "response_id": "ZDG_aqbEGsOGz7IPmevv8Qg",
+    "prompt_version": "modernize_v3"
+  }
+}

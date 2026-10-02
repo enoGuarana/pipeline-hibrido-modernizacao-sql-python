@@ -2,11 +2,14 @@
 
 Fonte: `Desafio_Tecnico_Inovacao_v2_candidatos 4.pdf`. Este arquivo consolida o enunciado, as entradas originais e a proposta inicial de implementação. Requisitos do PDF e recomendações estão separados. O projeto ainda não foi implementado; propostas não representam decisões já testadas.
 
+## Regra adicional de encerramento
+
+Ao final do projeto, todas as decisões arquiteturais devem estar explicitamente documentadas e justificadas, incluindo por que foram escolhidas, quais alternativas foram consideradas, quais evidências as validaram e em que condições deverão ser revistas.
+
 ## 1. Objetivo e limites
 
 Construir um pipeline híbrido (LLM + regras determinísticas) que recebe uma rotina PL/pgSQL e, opcionalmente, o schema das tabelas, produz um módulo Python 3.14 equivalente e retorna um relatório estruturado das etapas, decisões e validações.
 
-- Prazo: até **2 dias corridos a partir do recebimento**; o momento do recebimento deve ser confirmado pelo candidato.
 - Bibliotecas externas e assistentes de IA são permitidos; justificar bibliotecas no README e dominar as decisões para a defesa.
 - Foco: desenho da pipeline e decisões de tradução; cobertura completa de PL/pgSQL não é exigida.
 - Os anexos B–F são os cinco casos de teste obrigatórios. Não basta demonstrar B.
@@ -160,6 +163,16 @@ Checklist de entrega:
 - [ ] Histórico registra sucesso, falha e parcial com JSONB.
 - [ ] B–F possuem resultados reais e limitações identificadas.
 - [ ] Docker Compose ou equivalente e scripts de banco funcionam.
+
+## 7. Bônus a lembrar na conclusão da implementação
+
+Esta seção é um registro de acompanhamento do projeto e não altera os requisitos originais do desafio.
+
+- [ ] **Evaluation:** implementar métricas reproduzíveis para B–F, com denominador, conjunto avaliado, modelo, versão do prompt e limitações documentados. Disponibilizar endpoint, notebook ou tabela própria com resultados reais.
+- [ ] **Observabilidade:** avaliar integração com Langfuse (preferencialmente) ou LangSmith, com traces por execução, spans por nó, custos e latências quando disponíveis. Só reivindicar o bônus com evidência real, incluindo screenshot quando exigido pelo desafio.
+- [ ] **QA ampliado:** consolidar pytest, lint, cobertura e verificações de reprodutibilidade no ambiente limpo.
+
+Esses bônus devem ser revisados antes da conclusão final, mesmo que permaneçam pendentes. Não devem ser apresentados como implementados sem evidência reproduzível.
 - [ ] README contém comandos, variáveis, diagrama, bibliotecas justificadas, decisões, trade-offs e limites.
 - [ ] Evals/bônus reivindicados têm evidência; nenhum resultado simulado é apresentado como real.
 - [ ] Repositório não contém segredos; candidato consegue explicar as decisões.

@@ -1,0 +1,137 @@
+{
+  "errors": [],
+  "stages": [
+    {
+      "stage": "parsing",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "routine_wrapper",
+        "dollar_quoted_body",
+        "parameters",
+        "variables",
+        "operations",
+        "tables"
+      ],
+      "warnings": [
+        "body parsing is structural classification, not a complete PL/pgSQL AST"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "semantic_analysis",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "routine=sp_processar_lote_taxas",
+        "parameters=1",
+        "variables=10",
+        "operation=select",
+        "operation=insert",
+        "operation=update",
+        "operation=cursor",
+        "operation=loop",
+        "operation=jsonb",
+        "operation=function_call",
+        "table=contas",
+        "table=log_auditoria",
+        "table=taxas",
+        "table=transacoes"
+      ],
+      "warnings": [],
+      "decisions": [
+        "Preserve NUMERIC semantics and distinguish facts from inferences"
+      ],
+      "duration_ms": null
+    },
+    {
+      "stage": "generation",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [],
+      "decisions": [
+        "Use Gemini API with versioned context"
+      ],
+      "duration_ms": null
+    },
+    {
+      "stage": "validation",
+      "errors": [
+        {
+          "code": "VALIDATION_LINT",
+          "stage": "validation",
+          "message": "PLW0127 Self-assignment of variable `v_taxa`\n  --> generated.py:51:13\n   |\n50 |         if v_tipo == \"TRANSFERENCIA\":\n51 |             v_taxa = v_taxa\n   |             ^^^^^^\n52 |         elif v_tipo == \"SAQUE\":\n53 |             v_taxa = v_taxa * Decimal(\"1.10\")\n   |\n\nFound 1 error.\n",
+          "recoverable": false
+        }
+      ],
+      "status": "failure",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "repair",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [
+        "previous generated code and validation report were preserved"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "validation",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "ast_parse=passed",
+        "lint=passed"
+      ],
+      "warnings": [
+        "static validation does not establish equivalence"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "finalization",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    }
+  ],
+  "equivalence": "not_tested",
+  "traceability": {
+    "run_id": 21,
+    "schema_sha256": "e89b98c1501d8b0f2ee0301a8c74fd9275e9da45c8f0907dd3a0ec7b40fbd5a5",
+    "source_sha256": "4a69140bf3db21e31bf822defbf38c301aaa0e39d7df2f8a4dbb98502324340c",
+    "generation_attempts": 2,
+    "generated_code_sha256": "4f2eb6ad6a19100308d8d4b442cd3d8abdc15470a95a33f886df5a242c74dc23"
+  },
+  "generation_mode": "gemini",
+  "generation_metadata": {
+    "model": "gemini-3.5-flash-lite",
+    "usage": {
+      "total_token_count": 4390,
+      "prompt_token_count": 3485,
+      "prompt_tokens_details": [
+        {
+          "modality": "TEXT",
+          "token_count": 3485
+        }
+      ],
+      "candidates_token_count": 905
+    },
+    "provider": "gemini",
+    "repaired": true,
+    "response_id": "LTS_auj0CPDUz7IP3tXA-Aw",
+    "prompt_version": "modernize_v3"
+  }
+}
