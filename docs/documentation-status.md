@@ -27,8 +27,9 @@ sejam confundidos com o comportamento atual.
 - Evaluation: endpoint, script e dashboard implementados; denominador inclui
   falhas e exclui apenas `pending`.
 - Equivalência: aceita somente os três cenários B/C registrados; D–F pendentes.
-- Langfuse: adaptador opcional implementado; sem trace/screenshot remoto neste
-  ambiente por falta de credenciais/host configurados.
+- Langfuse: adaptador opcional implementado; trace real do `run_id=30`
+  confirmado via API v2 e captura versionada em `assets/langfuse-trace.png`.
+  Custos, retenção e alertas permanecem fora da evidência disponível.
 
 ## Como interpretar snapshots antigos
 

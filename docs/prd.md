@@ -15,7 +15,7 @@ Pipeline HTTP para modernização assistida de PL/pgSQL com rastreabilidade.
 | PRD-05 | Limitar reparo a uma tentativa | Implementado |
 | PRD-06 | Avaliar resultados exportados | Implementado |
 | PRD-07 | Demonstrar equivalência B–F | Parcial: B/C executados; D–F pendentes |
-| PRD-08 | Apoiar operação humana por dashboard e observabilidade opcional | Parcial: dashboard implementado; trace remoto pendente |
+| PRD-08 | Apoiar operação humana por dashboard e observabilidade opcional | Implementado no escopo interno: dashboard e trace remoto real; autenticação, retenção e alertas são evolução operacional |
 
 ## Restrições
 

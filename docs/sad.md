@@ -31,5 +31,6 @@ O código gerado não é executado pela API. Detalhes e decisões estão em
 
 Parser não é AST completa de PL/pgSQL; D/F ainda falham validação estática; a
 equivalência comportamental está demonstrada somente em três cenários de B/C.
-Langfuse está integrado como opção, mas não há trace remoto versionado neste
-ambiente. O dashboard depende da API e/ou do PostgreSQL estarem disponíveis.
+Langfuse está integrado como opção e há um trace remoto real versionado em
+`docs/assets/langfuse-trace.png`; custos, retenção e alertas não foram
+validados. O dashboard depende da API e/ou do PostgreSQL estarem disponíveis.

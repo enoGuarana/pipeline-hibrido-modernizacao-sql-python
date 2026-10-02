@@ -161,7 +161,7 @@ Os exemplos são contratos ilustrativos, não resultados de testes executados.
 - A geração seleciona Gemini, OpenRouter ou OpenAI por configuração da requisição/ambiente. A ausência de credencial mantém o modo simulado explicitamente identificado.
 - `ast.parse` e Ruff validam a saída, mas não autorizam alegação de equivalência.
 - Existe evidência comportamental para B/C em três cenários. D–F têm artefatos e revisão semântica, porém não estão incluídos em uma alegação de equivalência.
-- Langfuse e o dashboard Streamlit são integrações opcionais/de operação; a ausência de credenciais remotas impede afirmar que há trace ou screenshot remoto neste checkout.
+- Langfuse e o dashboard Streamlit são integrações opcionais/de operação; o trace real do `run_id=30` e sua captura estão versionados, sem ampliar a alegação para custos, retenção ou alertas.
 
 ## Decisões arquiteturais e validações pertinentes
 
@@ -176,7 +176,7 @@ Esta seção consolida decisões confirmadas durante a validação do projeto:
 | Manter o cliente LLM pequeno e o modelo configurável | Permite registrar modelo/prompt e trocar provedor sem alterar o grafo | Não criar abstrações adicionais antes de uma necessidade comprovada |
 | Selecionar o provedor no início de cada execução | `ModernizeRequest`, `PipelineState` e `pipeline.llm.client` carregam `provider`, `model_name` e a chave sem mudar a topologia do grafo; ver [ADR-016](adr/ADR-016-selecao-de-provedor-llm.md) | Revisar se surgir necessidade de streaming, ferramentas ou capacidades diferentes por provedor |
 | Permitir no máximo um reparo | Evita ciclos ilimitados e preserva tentativas anteriores | Revisar apenas com métricas de custo e taxa de correção |
-| Manter observabilidade e dashboard como camadas opcionais | O adaptador Langfuse não interrompe a execução sem credenciais; `dashboard.py` consome API e histórico para operação humana | Revisar após trace remoto real e requisitos de autenticação/retencão |
+| Manter observabilidade e dashboard como camadas opcionais | O adaptador Langfuse não interrompe a execução sem credenciais; o `run_id=30` comprovou a ingestão remota; `dashboard.py` consome API e histórico para operação humana | Revisar quando forem definidos autenticação, retenção, alertas e custos |
 
 ### Regra de fidelidade ao legado
 

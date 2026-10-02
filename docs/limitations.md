@@ -11,7 +11,9 @@
 - A recuperação de uma queda de processo entre o registro `pending` e a finalização ainda não foi implementada.
 - O endpoint `/evaluation` e o comparador comportamental estão implementados; há resultados equivalentes para os três cenários B/C registrados, mas D–F continuam sem execução comportamental.
 - `scripts/evaluate_results.py` reproduz as métricas sobre artefatos exportados; ele não executa código gerado e não substitui o comparativo no PostgreSQL.
-- O adaptador Langfuse está integrado de forma opcional, mas não há screenshot ou trace remoto versionado porque não existem credenciais/host configurados neste ambiente.
+- O adaptador Langfuse está integrado de forma opcional e o trace real do
+  `run_id=30` está versionado; não há evidência de custos, retenção, alertas ou
+  comportamento sob carga.
 - A execução comportamental D–F depende de rotinas legadas instaladas no banco
   isolado, cenários aprovados e uma saída real para comparação; B/C já têm três
   cenários registrados.

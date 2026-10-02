@@ -25,7 +25,7 @@
 | 7. Geração real/provedores | Concluída parcialmente | Gemini real; adaptador Gemini/OpenAI/OpenRouter; ADR-016 | chamadas externas dependem de credenciais/quota |
 | 8. Validação/reparo | Concluída | AST, Ruff, no máximo um reparo, preservação de tentativas | Não executa código gerado |
 | 9. Revisão semântica C–F | Parcial | artefatos e `results/semantic-review.md`; B/C comportamental | D–F sem equivalência comportamental |
-| 10. Evaluation/documentação | Concluída parcialmente | `/evaluation`, script, dashboard, README e limitações | Métrica comportamental só B/C; trace remoto pendente |
+| 10. Evaluation/documentação | Concluída parcialmente | `/evaluation`, script, dashboard, README e trace Langfuse real do `run_id=30` | Métrica comportamental só B/C; custos/retenção/alertas não demonstrados |
 | 11. Revisão arquitetural | Concluída | ADRs, limitações e defesa atualizados | Nova revisão deve ser sem alterações antes de corrigir |
 | 12. Defesa/prontidão | Parcial | `docs/defense.md` e requisitos atualizados | Resolver pendências D–F e operação de produção |
 

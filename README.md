@@ -178,9 +178,13 @@ uma trace raiz e spans para `parsing`, `semantic_analysis`, `generation`,
 pip install -e ".[dev,observability]"
 $env:LANGFUSE_PUBLIC_KEY = "pk-lf-..."
 $env:LANGFUSE_SECRET_KEY = "sk-lf-..."
-$env:LANGFUSE_HOST = "https://cloud.langfuse.com"
+$env:LANGFUSE_BASE_URL = "https://us.cloud.langfuse.com"
 $env:LANGFUSE_TRACING_ENVIRONMENT = "local"
 ```
+
+Use a URL correspondente à região do projeto Langfuse. No arquivo `.env`, use
+o formato `NOME=valor`, sem o prefixo `$env:`; esse prefixo é exclusivo do
+PowerShell.
 
 Sem as credenciais, o adaptador executa em modo no-op. Assim, o pipeline local
 continua funcional sem enviar dados acidentalmente. A integração não registra
@@ -189,17 +193,17 @@ completo.
 
 ### Captura de tela da evidência
 
-A captura deve mostrar a trace de uma chamada `/modernize` no painel Langfuse,
-com a árvore de spans acima e o status da geração/validação. Ela ainda não é
-versionada neste checkout: não há projeto Langfuse nem credenciais disponíveis
-para produzir uma captura real. Não foi incluída uma imagem simulada.
+A imagem abaixo é uma captura real da execução `run_id=30`, realizada em
+2026-10-02 com Gemini (`gemini-3.5-flash-lite`) e `prompt_version=modernize_v4`.
+A execução terminou com `success` após uma falha inicial de validação, uma única
+tentativa de reparo e nova validação aprovada. O Langfuse registrou 13
+observações, incluindo a trace raiz `modernize` e todos os nós esperados.
 
-Para gerar a evidência após configurar o serviço:
+![Trace real da execução no Langfuse](docs/assets/langfuse-trace.png)
 
-1. Inicie a aplicação e execute uma chamada de `/modernize`.
-2. Abra a trace retornada no painel Langfuse.
-3. Salve a imagem como `docs/assets/langfuse-trace.png`.
-4. Adicione ao README a imagem real salva em `docs/assets/langfuse-trace.png`.
+Essa evidência comprova ingestão remota, hierarquia dos spans, duração e status
+da execução. Ela não comprova equivalência comportamental, política de retenção,
+alertas ou atribuição completa de custos.
 
 Referências oficiais: [SDK Python Langfuse](https://langfuse.com/docs/observability/sdk/overview),
 [tipos de observação](https://langfuse.com/docs/observability/features/observation-types)
@@ -243,13 +247,14 @@ Detalhes estão em [docs/architecture.md](docs/architecture.md) e nos
 - B/C têm três cenários equivalentes; D–F ainda não têm comparação executada.
 - D/F possuem falhas de validação estática documentadas; E tem riscos semânticos
   ainda não testados.
-- A dependência Python do Anexo F ainda está pendente. Langfuse está integrado
-  opcionalmente, mas trace remoto/screenshot dependem de credenciais e host.
+- A dependência Python do Anexo F ainda está pendente. O trace remoto Langfuse
+  está evidenciado para uma execução; retenção, alertas e custos não foram
+  validados.
 - Recuperação automática de crashes não está implementada.
 
 Com mais tempo: corrigir D/F, implementar F por injeção de dependência, criar
-cenários comportamentais D–F, integrar Langfuse com traces reais e reproduzir a
-entrega em ambiente limpo.
+cenários comportamentais D–F, definir retenção/alertas no Langfuse e reproduzir
+a entrega em ambiente limpo.
 
 ## Documentação
 

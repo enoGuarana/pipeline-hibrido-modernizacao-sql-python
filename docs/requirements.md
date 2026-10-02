@@ -39,7 +39,7 @@ não são aceites por sua simples presença no documento.
 
 | ID | Bônus | Implementação prevista | Evidência de aceite |
 |---|---|---|---|
-| B1 | Observabilidade Langfuse ou LangSmith | Traces por execução, spans por nó e custos/latências quando houver LLM | Integração opcional em `pipeline.observability` e extra `observability`; screenshot/trace remoto ainda pendente por ausência de credenciais/host neste checkout |
+| B1 | Observabilidade Langfuse ou LangSmith | Traces por execução, spans por nó e custos/latências quando houver LLM | Trace real do `run_id=30` confirmado via API v2 com 13 observações e captura em `docs/assets/langfuse-trace.png`; latências aparecem no painel, mas atribuição completa de custos ainda não foi demonstrada |
 | B2 | QA estático e pytest | Linter, type checks se adotados e testes automatizados | 32 testes passaram, incluindo API HTTP, parser, dashboard, provedores, grafo e evaluation; Ruff passou em `src`, `tests` e `dashboard.py` |
 | B3 | Métrica de evaluation | Métrica definida, limitações explicitadas e resultado para B–F | Endpoint `/evaluation` e `scripts/evaluate_results.py`, com denominador, IDs e limitações; equivalência comportamental B/C registrada, D–F pendente |
 
@@ -121,7 +121,7 @@ semântico e equivalência.
 
 - **Geração/semântica:** B foi aprovado estaticamente no `run_id=18`; C–F têm artefatos reais, mas D–F ainda precisam de revisão comportamental comparável.
 - **Equivalência:** executar cenários D–F com schema/rotinas originais no banco de avaliação e comparar retorno, efeitos, exceções e transações. B/C já têm três cenários equivalentes registrados.
-- **Evaluation/observabilidade:** o endpoint, o script e o dashboard existem; Langfuse está integrado de forma opcional, mas trace/screenshot remoto continuam pendentes.
+- **Evaluation/observabilidade:** endpoint, script, dashboard e trace Langfuse real existem; custos, retenção e alertas continuam sem evidência de aceite.
 - **Runtime:** a CLI atual funciona, mas `langgraph-api 0.10.3` está em EOL; a tentativa de atualização para `0.15.1` foi revertida por conflitos documentados no ADR-010.
 
 A tentativa OpenAI histórica retornou `429 insufficient_quota`, mas não invalida

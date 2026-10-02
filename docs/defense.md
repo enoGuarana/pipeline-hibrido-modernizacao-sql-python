@@ -22,7 +22,7 @@ As decisões, alternativas, evidências e condições de revisão estão nos ADR
 - Os artefatos B–F foram gerados e revisados, mas somente B/C possuem comparação comportamental registrada. D–F continuam pendentes nessa dimensão.
 - O parser não é uma AST completa de PL/pgSQL; construções desconhecidas podem levar a status parcial.
 - D e F têm falhas de validação estática nos artefatos mais recentes; E tem riscos semânticos não testados. Nenhuma correção de negócio foi aplicada silenciosamente.
-- A integração Langfuse é opcional e o dashboard é uma ferramenta interna. Sem credenciais/configuração remota, não há trace ou screenshot remoto reivindicado.
+- A integração Langfuse é opcional e o dashboard é uma ferramenta interna. O `run_id=30` comprova trace remoto e spans por nó; custos, retenção, alertas e operação sob carga não estão comprovados.
 - Evaluation calcula métricas verificáveis, mas equivalência comportamental só é contada quando há relatório explícito de execução comparável.
 
 ## Evolução para produção
@@ -30,7 +30,7 @@ As decisões, alternativas, evidências e condições de revisão estão nos ADR
 1. Validar uma combinação atualizada e suportada do runtime LangGraph.
 2. Corrigir ou regenerar D/F somente com decisão explícita e revisão semântica; implementar a dependência Python de F conforme o ADR-013.
 3. Expandir o harness comportamental para D–F com banco isolado, cenários aprovados e normalização explícita de valores variáveis.
-4. Obter traces Langfuse reais, proteger o dashboard e definir retenção/alertas.
+4. Proteger o dashboard e definir custos, retenção e alertas no Langfuse.
 5. Implementar recuperação de crash, rotação de segredos, limites de concorrência e testes de carga antes de produção.
 
 ## Perguntas prováveis

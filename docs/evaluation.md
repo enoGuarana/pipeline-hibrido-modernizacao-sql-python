@@ -72,8 +72,10 @@ comparar retorno, efeitos e falhas.
 O adaptador opcional `pipeline.observability` integra observações Langfuse aos
 nós/API quando `LANGFUSE_PUBLIC_KEY` e `LANGFUSE_SECRET_KEY` estão disponíveis.
 Sem essas credenciais, a aplicação opera sem observabilidade remota e não há
-trace ou screenshot para reivindicar. A integração deve ser instalada com o
-extra `observability` e verificada em uma conta/host controlado.
+trace para reivindicar. Com credenciais de uma conta controlada, o `run_id=30`
+produziu uma trace real com 13 observações; a captura está em
+`docs/assets/langfuse-trace.png`. Essa verificação demonstra ingestão, spans,
+duração e status, mas não custos, retenção, alertas ou equivalência.
 
 ## Limites de interpretação
 
