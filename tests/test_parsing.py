@@ -46,3 +46,36 @@ def test_comments_and_strings_do_not_create_false_operations():
     assert "exception" not in ir["operations"]
     assert "locking" not in ir["operations"]
     assert "fake_table" not in ir["tables"]
+
+
+@pytest.mark.parametrize("tag", ["$BODY$", "$FUNCTION_2$"])
+def test_named_dollar_quote_preserves_body_and_extracts_operations(tag):
+    source = f"""CREATE FUNCTION named_quote(p_id BIGINT)
+    RETURNS INT
+    LANGUAGE plpgsql
+    AS {tag}
+    BEGIN
+        UPDATE contas SET status = 'ATIVA' WHERE id = p_id;
+        RETURN 1;
+    END;
+    {tag};"""
+
+    parsed = parse_routine(source)
+
+    assert parsed is not None
+    details, ir = parsed
+    assert "UPDATE contas" in details["body"]
+    assert ir["routine_name"] == "named_quote"
+    assert "update" in ir["operations"]
+    assert "contas" in ir["tables"]
+
+
+def test_named_dollar_quote_requires_matching_closing_tag():
+    source = """CREATE FUNCTION mismatched() RETURNS INT LANGUAGE plpgsql
+    AS $BODY$
+    BEGIN
+        RETURN 1;
+    END;
+    $OTHER$;"""
+
+    assert parse_routine(source) is None

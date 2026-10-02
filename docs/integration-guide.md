@@ -36,3 +36,8 @@ chaves em logs, JSON persistido ou controle de versão.
 Use `run_id`, `status`, `generated_code` e `report`. Para avaliação exportada,
 use `scripts/evaluate_results.py`; para comparação comportamental B/C, use
 `scripts/run_behavioral_bc.py` em ambiente isolado.
+
+Para operação manual, instale `.[dashboard]` e execute `streamlit run
+dashboard.py`. Sem `PIPELINE_API_URL`, o painel tenta as portas locais 8000 e
+8125; uma URL explícita desativa esse fallback. O painel não recebe chaves por
+padrão; quando uma chave é enviada à API, ela vale somente para aquela execução.

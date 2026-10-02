@@ -2,7 +2,7 @@
 
 ## Escopo
 
-Esta arquitetura descreve o núcleo mínimo para o desafio. Ela não aprova automaticamente as propostas do contexto e não implementa a tradução completa. A estratégia de parsing continua proposta no [ADR-007](adr/ADR-007-estrategia-de-parsing.md).
+Esta arquitetura descreve o núcleo implementado e seus limites para o desafio. Ela não transforma propostas do contexto em decisões aprovadas automaticamente. O parser produz uma IR estrutural, não uma AST completa de PL/pgSQL; a evidência atual de equivalência comportamental está limitada aos três cenários documentados para B e C.
 
 ## Fluxo
 
@@ -38,7 +38,7 @@ flowchart TB
     Parse --> IR[IR tipada]
     IR --> Analysis[Análise semântica]
     Analysis --> Prompt[Contexto versionado]
-    Prompt --> Provider[Cliente Gemini]
+    Prompt --> Provider[Adaptador de provedor<br/>Gemini/OpenAI/OpenRouter]
     Provider --> Validation[ast.parse + Ruff]
     Validation --> History
     Graph --> Evaluation[pipeline.evaluation]
@@ -73,11 +73,13 @@ Os tipos estão em `src/pipeline/contracts.py` e o estado em `src/pipeline/state
 ```json
 {
   "source_code": "SELECT 1;",
-  "schema": null
+  "schema": null,
+  "provider": "gemini",
+  "model_name": null
 }
 ```
 
-`source_code` é obrigatório e não vazio. `schema` é opcional e não deve ser tratado como instância automática do banco.
+`source_code` é obrigatório e não vazio. `schema` é opcional e não deve ser tratado como instância automática do banco. `provider` aceita `gemini`, `openrouter` ou `openai`; `model_name` e `api_key` são opcionais. A chave pode vir da requisição, mas nunca é persistida no relatório.
 
 ### Representação intermediária
 
@@ -152,13 +154,14 @@ Isso demonstra somente validação estática; não prova equivalência.
 
 Os exemplos são contratos ilustrativos, não resultados de testes executados.
 
-## Lacunas antes da implementação do fluxo completo
+## Estado atual da implementação
 
-- A IR ainda não é produzida por um nó real.
-- Não há testes automatizados nem fixtures versionadas B–F.
-- O relatório de cada nó ainda não é propagado pelo grafo.
-- O reparo limitado ainda não foi implementado.
-- A persistência de `success`, `failure` e `partial` ainda não foi verificada.
+- A IR e a análise são produzidas pelos nós reais e têm fixtures A–F preservadas.
+- O grafo possui parsing, análise, geração, validação, reparo limitado e finalização; falhas controladas são registradas nos relatórios de etapa.
+- A geração seleciona Gemini, OpenRouter ou OpenAI por configuração da requisição/ambiente. A ausência de credencial mantém o modo simulado explicitamente identificado.
+- `ast.parse` e Ruff validam a saída, mas não autorizam alegação de equivalência.
+- Existe evidência comportamental para B/C em três cenários. D–F têm artefatos e revisão semântica, porém não estão incluídos em uma alegação de equivalência.
+- Langfuse e o dashboard Streamlit são integrações opcionais/de operação; a ausência de credenciais remotas impede afirmar que há trace ou screenshot remoto neste checkout.
 
 ## Decisões arquiteturais e validações pertinentes
 
@@ -171,7 +174,9 @@ Esta seção consolida decisões confirmadas durante a validação do projeto:
 | Usar parsing híbrido e IR própria | Os experimentos mostraram que nenhum parser candidato cobre sozinho PL/pgSQL completo | Marcar construções desconhecidas e revisar quando a cobertura B–F for medida |
 | Preservar queries, tipos, locking e transações no PostgreSQL quando necessário | Decisão alinhada aos riscos de semântica dos anexos e ao contrato de conexão assíncrona | Revisar somente com evidência comportamental comparável |
 | Manter o cliente LLM pequeno e o modelo configurável | Permite registrar modelo/prompt e trocar provedor sem alterar o grafo | Não criar abstrações adicionais antes de uma necessidade comprovada |
+| Selecionar o provedor no início de cada execução | `ModernizeRequest`, `PipelineState` e `pipeline.llm.client` carregam `provider`, `model_name` e a chave sem mudar a topologia do grafo; ver [ADR-016](adr/ADR-016-selecao-de-provedor-llm.md) | Revisar se surgir necessidade de streaming, ferramentas ou capacidades diferentes por provedor |
 | Permitir no máximo um reparo | Evita ciclos ilimitados e preserva tentativas anteriores | Revisar apenas com métricas de custo e taxa de correção |
+| Manter observabilidade e dashboard como camadas opcionais | O adaptador Langfuse não interrompe a execução sem credenciais; `dashboard.py` consome API e histórico para operação humana | Revisar após trace remoto real e requisitos de autenticação/retencão |
 
 ### Regra de fidelidade ao legado
 

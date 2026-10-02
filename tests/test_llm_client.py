@@ -35,7 +35,8 @@ async def test_generate_uses_gemini_and_records_available_metadata(monkeypatch):
             self.http_client.close()
             calls["closed"] = True
 
-    monkeypatch.setenv("GEMINI_API_KEY", "test-only")
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    monkeypatch.setenv("GOOGLE_API_KEY", "google-fallback-only")
     monkeypatch.setenv("GEMINI_MODEL", "gemini-test")
     monkeypatch.setattr(client.genai, "Client", FakeGeminiClient)
 
@@ -53,12 +54,14 @@ async def test_generate_uses_gemini_and_records_available_metadata(monkeypatch):
     assert calls["contents"] == "structured context"
     assert calls["config"].automatic_function_calling.disable is True
     assert calls["config"].response_mime_type == "text/plain"
+    assert calls["client_kwargs"]["api_key"] == "google-fallback-only"
     assert calls["closed"] is True
 
 
 @pytest.mark.anyio
 async def test_generate_requires_gemini_key(monkeypatch):
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    monkeypatch.delenv("GOOGLE_API_KEY", raising=False)
 
     with pytest.raises(client.LLMError, match="GEMINI_API_KEY is not configured"):
         await client.generate(prompt="context")

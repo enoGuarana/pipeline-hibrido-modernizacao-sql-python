@@ -12,8 +12,9 @@
 - **Aceita:** decisão explicitamente adotada para a etapa, com a evidência disponível e seus limites registrados.
 - **Substituída:** decisão anteriormente aceita que deixou de orientar o trabalho; o documento substituto e o motivo devem ser indicados.
 
-O ADR-009 (OpenAI) foi substituído pelo ADR-012 (Gemini) para novas gerações;
-sua evidência histórica foi preservada. As propostas do `DESAFIO_CONTEXTO.md`
+O ADR-009 (OpenAI) foi substituído primeiro pelo ADR-012 (Gemini) e a seleção
+por requisição foi consolidada no ADR-016; sua evidência histórica foi
+preservada. As propostas do `DESAFIO_CONTEXTO.md`
 não são aceites por sua simples presença no documento.
 
 ## Obrigatórios
@@ -21,12 +22,12 @@ não são aceites por sua simples presença no documento.
 | ID | Requisito | Implementação prevista | Evidência de aceite |
 |---|---|---|---|
 | O1 | Backend iniciado pelo LangGraph CLI | Configuração CLI validada e rotas personalizadas integradas ao servidor LangGraph | CLI 0.4.32 carregou `pipeline.api:app` com PostgreSQL do projeto em `localhost:55432`; aceite limitado ao ambiente de desenvolvimento local |
-| O2 | `POST /modernize` recebe SQL/schema e retorna Python/relatório | Contratos de entrada/saída e integração com o grafo | `run_id=18`: HTTP 200, Python real e relatório persistido; schema continua opcional e não foi fornecido nesse caso |
+| O2 | `POST /modernize` recebe SQL/schema e retorna Python/relatório | Contratos de entrada/saída e integração com o grafo; seleção opcional de provedor/modelo | `run_id=18`: HTTP 200, Python real e relatório persistido; campos `provider`, `api_key` e `model_name` também são aceitos, sem persistir a chave |
 | O3 | `GET /health` retorna status | Rota funcional no servidor alvo | `GET http://127.0.0.1:8125/health` respondeu 200 e `{"status":"ok"}`; evidência somente local |
 | O4 | LangGraph com quatro nós e estado tipado | Parsing, análise semântica, geração e validação | Grafo tipado executado no `run_id=18`, seguido de finalização; diagrama em `docs/architecture.md` |
-| O5 | Parsing estruturado | AST, tokens classificados ou IR equivalente; parser justificado | IR estrutural e testes B–F; limite de não ser AST completa documentado |
+| O5 | Parsing estruturado | AST, tokens classificados ou IR equivalente; parser justificado | IR estrutural e testes B–F; `$$` e tags nomeadas como `$BODY$`; limite de não ser AST completa documentado |
 | O6 | Análise semântica e riscos | Extrair parâmetros, variáveis, cursores, transações, exceções, CTEs, chamadas e riscos (`RAISE`, `FOR UPDATE`, `JSONB`, recursão) | Testes B–F e tabela de cobertura; inferências separadas de fatos |
-| O7 | Geração equivalente e decisão SQL/Python | Contexto de geração derivado das etapas anteriores; fronteira documentada | Código/relatório real B em `results/run-18`; validade estática aprovada, equivalência ainda não testada |
+| O7 | Geração equivalente e decisão SQL/Python | Contexto de geração derivado das etapas anteriores; fronteira documentada; provedor selecionável | Código/relatório real B em `results/run-18`; validade estática aprovada e equivalência B/C demonstrada somente nos cenários de `behavioral-bc.json`; D–F pendentes |
 | O8 | Validação estática | `ast.parse` e linting do Python produzido | `run_id=18` passou nas duas verificações na primeira tentativa; `run_id=17` preserva falha Ruff real |
 | O9 | PostgreSQL e `modernization_history` | Script/migração e repositório de persistência | Banco iniciado, schema inspecionado e integração funcional |
 | O10 | Persistir toda execução | Criar registro antes do processamento e atualizar sucesso/falha/parcial | `run_id=18` persistiu sucesso e `run_id=17` persistiu falha controlada com JSONB; desfecho parcial ainda requer evidência específica |
@@ -38,8 +39,8 @@ não são aceites por sua simples presença no documento.
 
 | ID | Bônus | Implementação prevista | Evidência de aceite |
 |---|---|---|---|
-| B1 | Observabilidade Langfuse ou LangSmith | Traces por execução, spans por nó e custos/latências quando houver LLM | Integração opcional em `pipeline.observability` e extra `observability`; screenshot/trace remoto ainda pendente |
-| B2 | QA estático e pytest | Linter, type checks se adotados e testes automatizados | Comandos, versões, saída e cobertura publicados; sem declarar passagem antecipada |
+| B1 | Observabilidade Langfuse ou LangSmith | Traces por execução, spans por nó e custos/latências quando houver LLM | Integração opcional em `pipeline.observability` e extra `observability`; screenshot/trace remoto ainda pendente por ausência de credenciais/host neste checkout |
+| B2 | QA estático e pytest | Linter, type checks se adotados e testes automatizados | 32 testes passaram, incluindo API HTTP, parser, dashboard, provedores, grafo e evaluation; Ruff passou em `src`, `tests` e `dashboard.py` |
 | B3 | Métrica de evaluation | Métrica definida, limitações explicitadas e resultado para B–F | Endpoint `/evaluation` e `scripts/evaluate_results.py`, com denominador, IDs e limitações; equivalência comportamental B/C registrada, D–F pendente |
 
 ## Recomendações não obrigatórias
@@ -67,11 +68,11 @@ Estas são recomendações de engenharia, não requisitos aceitos automaticament
 
 Nenhuma dessas inconsistências foi corrigida silenciosamente; devem ser confirmadas com o avaliador se afetarem a entrega.
 
-## Estado atual observado
+## Estado atual observado — baseline histórico
 
-Há contratos tipados, uma definição de grafo, rotas, pool PostgreSQL e DDL no repositório. Python 3.14.8, a instalação editável e o LangGraph CLI foram verificados; o CLI carregou o grafo e a aplicação customizada usando o PostgreSQL do projeto em `localhost:55432`. `/health` respondeu 200. Uma chamada real a `/modernize` criou e finalizou uma linha `pending` com `run_id=1`; os nós ainda levantam `NotImplementedError`, a rota retorna `501` e não há execução dos casos B–F. O1, O3 e a fatia `pending` de O10 têm evidência local limitada; O2 e O4–O9, O11–O13 permanecem não aceitos.
+Há contratos tipados, uma definição de grafo, rotas, pool PostgreSQL e DDL no repositório. Este parágrafo registra o baseline anterior ao fluxo completo: os nós levantavam `NotImplementedError`, a rota retornava `501` e a chamada criava apenas `pending`. As atualizações posteriores abaixo são a fonte de status atual.
 
-## Atualização após a etapa 5
+## Atualização após a etapa 5 — histórico substituído
 
 A descrição acima é o baseline anterior à implementação do fluxo. A evidência mais recente é:
 
@@ -82,17 +83,25 @@ A descrição acima é o baseline anterior à implementação do fluxo. A evidê
 - O8: `ast.parse` e Ruff passaram para o código produzido no caso verificado.
 - O9/O10: `run_id=4` foi persistido no PostgreSQL isolado como `success`, com código gerado simulado e cinco relatórios no JSONB.
 
-O2, O4, O8, O9 e O10 permanecem aceitos apenas para esta fatia e com os limites acima. O5–O7, O11–O13 continuam pendentes para cobertura completa, integração real e os anexos B–F.
+Esse snapshot foi substituído pelas evidências posteriores deste documento. Ele
+permanece apenas para explicar a evolução do projeto.
 
 ## Atualização após parsing/análise dos anexos
 
 Os fixtures B–F foram criados em `fixtures/`, preservando uma versão do SQL de cada rotina. O parser estrutural reconhece invólucro, parâmetros, variáveis, operações, tabelas e construções de risco. A análise classifica fatos, riscos, inferências e construções não suportadas. A cobertura automatizada passou para os cinco fixtures e inclui proteção contra falsos positivos em comentários e strings.
 
-Isso fornece evidência parcial para O5 e O6. Ainda não é evidência de geração equivalente, execução real B–F ou equivalência comportamental.
+Isso fornece evidência parcial para O5 e O6. As evidências posteriores
+registram geração real B–F e equivalência limitada B/C, sem generalizar para
+D–F.
 
 ## Atualização de geração, reparo e rastreabilidade
 
-O cliente Gemini foi integrado por uma fronteira pequena, com prompt versionado e modelo configurável por ambiente. A decisão OpenAI anterior foi substituída sem apagar sua evidência histórica. O reparo limitado tem uma única tentativa e preserva os relatórios anteriores. Os relatórios incluem hashes SHA-256 da entrada, schema e código gerado quando disponíveis.
+O cliente Gemini foi integrado por uma fronteira pequena, com prompt versionado
+e modelo configurável por ambiente. O ADR-016 estendeu a mesma fronteira para
+OpenAI e OpenRouter compatíveis, sem alterar a topologia do grafo. O reparo
+limitado tem uma única tentativa e preserva os relatórios anteriores. Os
+relatórios incluem hashes SHA-256 da entrada, schema e código gerado quando
+disponíveis.
 
 O `run_id=18` fornece evidência real para O2, O7 e O8 no Anexo B: a chamada
 `POST /modernize`, servida pelo LangGraph CLI, usou `gemini-3.5-flash-lite` e
@@ -108,14 +117,14 @@ plausível, divergência observada e comportamento ainda não testado. O12 tem
 evidência de execução dos cinco casos, mas permanece parcial quanto a aceite
 semântico e equivalência.
 
-## Pendências objetivas após as decisões validadas
+## Pendências objetivas atuais
 
-- **Geração real B:** concluída estaticamente no `run_id=18`; falta executar e
-  revisar C–F.
-- **Equivalência:** instalar schema/rotinas originais no banco de avaliação, executar cenários B–F e comparar retorno, efeitos, exceções e transações.
-- **Evaluation/observabilidade:** bônus planejados; ainda não reivindicados por falta de traces e resultados reais.
+- **Geração/semântica:** B foi aprovado estaticamente no `run_id=18`; C–F têm artefatos reais, mas D–F ainda precisam de revisão comportamental comparável.
+- **Equivalência:** executar cenários D–F com schema/rotinas originais no banco de avaliação e comparar retorno, efeitos, exceções e transações. B/C já têm três cenários equivalentes registrados.
+- **Evaluation/observabilidade:** o endpoint, o script e o dashboard existem; Langfuse está integrado de forma opcional, mas trace/screenshot remoto continuam pendentes.
 - **Runtime:** a CLI atual funciona, mas `langgraph-api 0.10.3` está em EOL; a tentativa de atualização para `0.15.1` foi revertida por conflitos documentados no ADR-010.
 
-A tentativa OpenAI histórica retornou `429 insufficient_quota`, mas foi
-substituída pela integração Gemini. A geração real do Anexo B está comprovada;
-equivalência comportamental e os artefatos C–F permanecem abertos.
+A tentativa OpenAI histórica retornou `429 insufficient_quota`, mas não invalida
+o adaptador atual: Gemini é o padrão e OpenAI/OpenRouter são caminhos
+compatíveis selecionáveis por requisição. A geração real do Anexo B está
+comprovada; D–F permanecem abertos quanto à equivalência comportamental.

@@ -29,4 +29,6 @@ Os testes determinísticos passaram em 3 casos; a CLI carregou a aplicação; um
 
 ## Condição de revisão
 
-Revisar ao integrar o provedor real ou quando a geração dos anexos C–F começar; o stub não pode ser apresentado como resultado de LLM.
+A integração real já revisou a decisão para as execuções com credencial; o
+stub continua válido somente para testes sem credencial e nunca pode ser
+apresentado como resultado de LLM.

@@ -28,9 +28,11 @@ fronteira configurável já aceita e foi registrada, sem alias `latest`. Usar
 `truststore 0.10.4` com HTTPX
 para consultar o armazenamento nativo de certificados, sem desabilitar TLS.
 
-A interface interna `generate(prompt) -> LLMResult` permanece estável. O grafo
-não conhece detalhes do SDK. Metadados disponíveis — provedor, versão do modelo,
-identificador da resposta, versão do prompt e uso — são preservados no relatório.
+A interface interna recebe o prompt e a configuração da execução
+(`provider`, chave e modelo) e devolve `LLMResult`. O grafo não conhece detalhes
+do SDK; a seleção de OpenAI/OpenRouter é documentada no ADR-016. Metadados
+disponíveis — provedor, versão do modelo, identificador da resposta, versão do
+prompt e uso — são preservados no relatório.
 
 ## Prós e contras
 

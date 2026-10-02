@@ -5,7 +5,13 @@
 Entrada mínima:
 
 ```json
-{"source_code": "CREATE FUNCTION ...", "schema": null}
+{
+  "source_code": "CREATE FUNCTION ...",
+  "schema": null,
+  "provider": "gemini",
+  "api_key": null,
+  "model_name": null
+}
 ```
 
 Resposta resumida:
@@ -14,7 +20,9 @@ Resposta resumida:
 {"run_id": 18, "status": "success", "generated_code": "...", "report": {"stages": [], "errors": []}}
 ```
 
-`status` pode ser `success`, `failure`, `partial` ou `pending`. O contrato
+`provider` aceita `gemini`, `openrouter` ou `openai`; `api_key` e `model_name`
+são opcionais. A chave pode vir do ambiente quando omitida e nunca é
+persistida. `status` pode ser `success`, `failure`, `partial` ou `pending`. O contrato
 tipado está em `src/pipeline/contracts.py`; o estado está em
 `src/pipeline/state.py`.
 

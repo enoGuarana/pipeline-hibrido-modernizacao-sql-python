@@ -38,7 +38,7 @@ identifica riscos, usa contexto estruturado no modelo e valida a saída com
                             ▼
                     ┌───────────────┐
                     │ geração       │◄──────────────┐
-                    │ Gemini/stub   │               │
+                    │ provedor/stub │               │
                     └───────┬───────┘               │
                             ▼                        │
                     ┌───────────────┐                │
@@ -71,8 +71,8 @@ o código produzido e não transforma validação estática em equivalência.
 
 ## Executar localmente
 
-Pré-requisitos: Python 3.14, Docker Desktop com Compose e uma chave Gemini
-somente quando a geração real for necessária.
+Pré-requisitos: Python 3.14, Docker Desktop com Compose e uma chave do
+provedor escolhido somente quando a geração real for necessária.
 
 ```powershell
 py -3.14 -m venv .venv
@@ -90,11 +90,10 @@ pip install -e ".[dashboard]"
 streamlit run dashboard.py
 ```
 
-O painel usa `PIPELINE_API_URL` para o endereço do FastAPI (padrão:
-`http://localhost:8000`) e `DATABASE_URL` para a auditoria PostgreSQL. Ele não
-substitui a API: serve para submissão manual, avaliação e revisão Human-in-the-loop.
-No setup local deste repositório, o LangGraph CLI pode usar a porta `8125`; nesse
-caso, execute `$env:PIPELINE_API_URL = "http://localhost:8125"` antes do Streamlit.
+O painel usa `PIPELINE_API_URL` quando ela é definida e `DATABASE_URL` para a
+auditoria PostgreSQL. Sem URL explícita, tenta `http://localhost:8000` e, somente
+em erro de conexão, `http://localhost:8125`. Ele não substitui a API: serve para
+submissão manual, avaliação e revisão Human-in-the-loop.
 
 Verifique a API:
 
@@ -170,8 +169,8 @@ e remove o schema ao terminar. A evidência está em
 
 ## Observabilidade Langfuse
 
-O projeto possui integração opcional com o SDK oficial `langfuse` v4. Quando
-as três variáveis abaixo estão configuradas, cada chamada de `/modernize` cria
+O projeto possui integração opcional com o SDK oficial `langfuse` v4. Quando as
+credenciais obrigatórias estão configuradas, cada chamada de `/modernize` cria
 uma trace raiz e spans para `parsing`, `semantic_analysis`, `generation`,
 `validation`, `repair` e `finalization`:
 
@@ -200,7 +199,7 @@ Para gerar a evidência após configurar o serviço:
 1. Inicie a aplicação e execute uma chamada de `/modernize`.
 2. Abra a trace retornada no painel Langfuse.
 3. Salve a imagem como `docs/assets/langfuse-trace.png`.
-4. Adicione ao README: `![Trace Langfuse](docs/assets/langfuse-trace.png)`.
+4. Adicione ao README a imagem real salva em `docs/assets/langfuse-trace.png`.
 
 Referências oficiais: [SDK Python Langfuse](https://langfuse.com/docs/observability/sdk/overview),
 [tipos de observação](https://langfuse.com/docs/observability/features/observation-types)
@@ -221,7 +220,8 @@ e [self-host com Docker Compose](https://langfuse.com/self-hosting/deployment/do
   mas exige que o modelo escolhido aceite o formato de chat e o contrato de
   saída textual.
 - **Parsing híbrido:** preserva SQL e marca construções desconhecidas; não é
-  uma AST completa de PL/pgSQL.
+  uma AST completa de PL/pgSQL. O invólucro aceita `$$` e tags nomeadas, como
+  `$BODY$`, exigindo o mesmo delimitador na abertura e no fechamento.
 - **Um único reparo:** limita custo e ciclos infinitos; uma saída inválida é
   preservada como falha.
 - **Langfuse opcional:** adiciona traces por execução e nó quando configurado;
@@ -243,7 +243,8 @@ Detalhes estão em [docs/architecture.md](docs/architecture.md) e nos
 - B/C têm três cenários equivalentes; D–F ainda não têm comparação executada.
 - D/F possuem falhas de validação estática documentadas; E tem riscos semânticos
   ainda não testados.
-- A dependência Python do Anexo F e a integração Langfuse estão pendentes.
+- A dependência Python do Anexo F ainda está pendente. Langfuse está integrado
+  opcionalmente, mas trace remoto/screenshot dependem de credenciais e host.
 - Recuperação automática de crashes não está implementada.
 
 Com mais tempo: corrigir D/F, implementar F por injeção de dependência, criar
@@ -258,3 +259,4 @@ entrega em ambiente limpo.
 - [Avaliação](docs/evaluation.md)
 - [Runbook](docs/runbook.md)
 - [Guia de integração](docs/integration-guide.md)
+- [Estado da documentação](docs/documentation-status.md)

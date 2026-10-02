@@ -2,14 +2,16 @@
 
 ## Status
 
-Proposto e parcialmente implementado; a execução B–F permanece pendente.
+Aceito parcialmente em 2026-10-02; evidência publicada para B/C, não
+generalizada para D–F.
 
 ## Contexto
 
 Validação estática não demonstra preservação de comportamento. A comparação
 precisa observar retorno, alterações persistidas e erros, sem esconder
-divergências por normalização implícita. O repositório ainda não contém
-rotinas legadas instaladas nem geração real suficiente para executar B–F.
+divergências por normalização implícita. O banco isolado e a geração real
+ficaram disponíveis primeiro para B/C; D–F ainda não têm cenários comparáveis
+publicados.
 
 ## Alternativas
 
@@ -36,7 +38,8 @@ marca observações ausentes como equivalentes.
 ## Evidência e condição de revisão
 
 Os testes determinísticos cobrem igualdade com `Decimal`, campos voláteis
-declarados e divergência de saldo não declarada. Não há evidência de
-equivalência B–F neste momento. Revisar após executar pelo menos um cenário
-com a rotina legada e a implementação Python em banco isolado, comparando
-retorno, estado, exceções e efeitos transacionais.
+declarados e divergência de saldo não declarada. `results/behavioral-bc.json`
+registra três cenários B/C executados em schema temporário, todos equivalentes
+segundo o comparador. Isso não aceita D–F nem entradas não cobertas. Revisar
+após executar D–F com a rotina legada e a implementação Python em banco
+isolado, comparando retorno, estado, exceções e efeitos transacionais.

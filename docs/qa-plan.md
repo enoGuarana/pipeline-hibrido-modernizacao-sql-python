@@ -23,5 +23,6 @@
 
 ## Evidência atual
 
-A última verificação registrada passou com 20 testes e Ruff. O relatório B/C
+A última verificação registrada passou com 32 testes e Ruff em `src`, `tests` e
+`dashboard.py`, com dois avisos de depreciação. O relatório B/C
 registra 3/3 cenários equivalentes. Isso não cobre D–F.

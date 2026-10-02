@@ -10,7 +10,12 @@ import requests
 import streamlit as st
 from psycopg.rows import dict_row
 
-API_URL = os.getenv("PIPELINE_API_URL", "http://localhost:8000").rstrip("/")
+_configured_api_url = os.getenv("PIPELINE_API_URL")
+API_URLS = (
+    (_configured_api_url.rstrip("/"),)
+    if _configured_api_url
+    else ("http://localhost:8000", "http://localhost:8125")
+)
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
     "postgresql://postgres:postgres@localhost:55432/modernization",
@@ -18,19 +23,30 @@ DATABASE_URL = os.getenv(
 REQUEST_TIMEOUT_SECONDS = float(os.getenv("DASHBOARD_REQUEST_TIMEOUT_SECONDS", "30"))
 
 
-def _api_url(path: str) -> str:
-    return f"{API_URL}{path}"
+def _api_url(base_url: str, path: str) -> str:
+    return f"{base_url}{path}"
 
 
 def _request_json(method: str, path: str, **kwargs: Any) -> dict[str, Any]:
     """Call FastAPI and return JSON, preserving useful HTTP error details."""
 
-    response = requests.request(
-        method,
-        _api_url(path),
-        timeout=REQUEST_TIMEOUT_SECONDS,
-        **kwargs,
-    )
+    connection_error: requests.ConnectionError | None = None
+    for base_url in API_URLS:
+        try:
+            response = requests.request(
+                method,
+                _api_url(base_url, path),
+                timeout=REQUEST_TIMEOUT_SECONDS,
+                **kwargs,
+            )
+            break
+        except requests.ConnectionError as exc:
+            # The fallback is only for the default local ports. An explicitly
+            # configured PIPELINE_API_URL remains authoritative.
+            connection_error = exc
+    else:
+        assert connection_error is not None
+        raise connection_error
     try:
         body = response.json()
     except ValueError:
@@ -75,7 +91,7 @@ def _read_history(status: str) -> list[dict[str, Any]]:
 
 def _render_submission_tab() -> None:
     st.subheader("Submissão e teste")
-    st.caption(f"Backend configurado em: `{API_URL}`")
+    st.caption(f"Backends locais tentados em ordem: `{', '.join(API_URLS)}`")
     source_code = st.text_area(
         "Cole aqui a rotina PL/pgSQL legado",
         height=360,
@@ -91,7 +107,7 @@ def _render_submission_tab() -> None:
             try:
                 result = modernize(source_code, provider)
             except requests.ConnectionError:
-                st.error(f"Não foi possível conectar à API em {API_URL}.")
+                st.error(f"Não foi possível conectar à API em {', '.join(API_URLS)}.")
             except requests.Timeout:
                 st.error("A API excedeu o tempo limite de resposta.")
             except requests.HTTPError as exc:
@@ -117,7 +133,7 @@ def _render_metrics_tab() -> None:
         try:
             st.session_state["metrics"] = fetch_metrics()
         except requests.ConnectionError:
-            st.error(f"Não foi possível conectar à API em {API_URL}.")
+            st.error(f"Não foi possível conectar à API em {', '.join(API_URLS)}.")
             return
         except requests.RequestException as exc:
             st.error(f"Falha ao consultar métricas: {exc}")

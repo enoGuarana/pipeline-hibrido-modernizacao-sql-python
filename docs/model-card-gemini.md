@@ -1,29 +1,37 @@
-# Model Card — Gemini
+# Model cards — provedores de LLM
 
-## Identificação
+Este arquivo mantém o nome histórico do modelo Gemini, mas documenta a fronteira
+atual de provedores. A seleção ocorre por execução; não existe alegação de que
+modelos diferentes produzem saídas equivalentes.
 
-- Provedor: Google Gemini API via `google-genai`.
-- Modelo configurável por `GEMINI_MODEL`.
-- Modelo verificado nos artefatos atuais: `gemini-3.5-flash-lite`.
+## Gemini (padrão)
+
+- Cliente: SDK `google-genai`.
+- Configuração: `GEMINI_API_KEY`, `GEMINI_MODEL` ou os campos correspondentes da
+  requisição.
 - Prompt versionado: `modernize_v4` nos artefatos C–F mais recentes.
+- Evidência: geração real de B em `results/run-18`, com aprovação em AST e Ruff.
+- Limite: quota, disponibilidade do catálogo e comportamento do modelo variam;
+  a saída não é executada pela API.
 
-## Uso pretendido
+## OpenAI-compatible
 
-Gerar proposta de módulo Python a partir de SQL, IR, análise, riscos, contrato
-e política de transação.
+- Cliente: SDK oficial `openai`.
+- OpenAI: `OPENAI_API_KEY` e `OPENAI_MODEL`.
+- OpenRouter: `OPENROUTER_API_KEY`, `OPENROUTER_MODEL` e base URL
+  `https://openrouter.ai/api/v1`.
+- A interface normaliza o texto retornado para `generated_code` e registra
+  somente metadados seguros.
+- Evidência local: testes determinísticos validam roteamento e tratamento de
+  resposta; a tentativa histórica OpenAI terminou em `429 insufficient_quota`.
+- Limite: não há neste checkout uma chamada remota OpenRouter aprovada; não
+  inventar modelo, custo ou tokens quando o provedor não os fornecer.
 
-## Controles
+## Controles comuns
 
-`ast.parse`, Ruff, limite de um reparo, persistência de tentativas, hashes e
-relatório por etapa. O código gerado não é executado pela API.
-
-## Limitações
-
-Validade estática não prova equivalência. O modelo pode alterar predicados,
-NULL, precisão, locking ou exceções; D–F continuam com limitações documentadas.
-Não há benchmark de qualidade ou garantia de estabilidade do modelo.
-
-## Segurança
-
-A chave vem de `GEMINI_API_KEY` e não deve ser registrada. Modelo, prompt e uso
-disponível são armazenados quando o provedor informa esses dados.
+- Chaves podem ser fornecidas pela requisição ou pelo ambiente, mas não são
+  persistidas no histórico nem incluídas no prompt de auditoria.
+- Timeout, resposta vazia, erro de autenticação e resposta fora do contrato
+  encerram a execução como falha controlada.
+- Uma saída sintaticamente válida ainda precisa de revisão semântica; AST/Ruff
+  não comprovam equivalência.

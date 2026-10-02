@@ -8,13 +8,13 @@ Esta validação cobre a inicialização da stack e uma comparação curta entre
 
 Não foi instalado nem usado um parser como dependência do projeto nesta etapa. A escolha abaixo é uma proposta sujeita a ADR e a nova verificação no runtime alvo.
 
-## Stack executável
+## Stack executável — baseline histórico
 
 | Item | Comando/versão | Resultado | Limitação |
 |---|---|---|---|
 | Python alvo | `py -3.14` / Python 3.14.8, registrado na validação anterior | Dependências do projeto instalaram e o grafo compilou | Revalidação posterior foi bloqueada por acesso ao executável |
 | LangGraph CLI | `langgraph dev --no-browser --host 127.0.0.1 --port 8125` / CLI 0.4.32 | Carregou `modernization` e `pipeline.api:app` | Servidor de desenvolvimento; não é evidência de produção |
-| Rotas customizadas | `GET /health`; `POST /modernize` | `/health` respondeu 200; `/modernize` respondeu 501 conforme contrato pendente | Geração ainda não existe |
+| Rotas customizadas | `GET /health`; `POST /modernize` | No baseline, `/health` respondeu 200 e `/modernize` respondeu 501 conforme contrato pendente | Esse resultado é histórico; a implementação atual tem fluxo completo |
 | PostgreSQL | `postgres:16-alpine`, publicado em `localhost:55432` | Healthcheck saudável; `modernization_history` criada e inspecionada | Porta 5432 já era usada por uma instalação local |
 
 Comandos reproduzíveis da verificação de integração:
@@ -24,7 +24,33 @@ $env:DATABASE_URL = "postgresql://postgres:postgres@localhost:55432/modernizatio
 langgraph dev --no-browser --host 127.0.0.1 --port 8125
 ```
 
-Os comandos HTTP usados foram `GET http://127.0.0.1:8125/health` e um `POST` para `/modernize` com `{"source_code":"SELECT 1;"}`. A chamada criou `run_id=1` com status `pending`.
+Os comandos HTTP usados no baseline foram `GET http://127.0.0.1:8125/health` e um `POST` para `/modernize` com `{"source_code":"SELECT 1;"}`. A chamada criou `run_id=1` com status `pending`.
+
+## Verificações posteriores da implementação
+
+As verificações abaixo não substituem os experimentos históricos dos parsers;
+elas registram o estado executável posterior:
+
+| Verificação | Comando/versão | Resultado observado | Limite |
+|---|---|---|---|
+| Runtime | Python 3.14.8 | instalação editável e testes executados | não é garantia de compatibilidade futura |
+| Dependências | `pip check` | sem conflitos no ambiente verificado | ambiente local |
+| Qualidade | `pytest -q`; Ruff em `src`, `tests` e `dashboard.py` | 32 testes passaram; Ruff passou nesse escopo | dois avisos de depreciação não foram eliminados |
+| Provedores | testes unitários com clientes simulados | Gemini, OpenAI e OpenRouter roteados sem chamadas externas | não comprova quota, modelo ou resposta real de cada provedor |
+| LangGraph | `langgraph dev --no-browser --host 127.0.0.1 --port 8125` | CLI carregou `pipeline.api:app` | servidor de desenvolvimento |
+| Dashboard | `python -m streamlit run dashboard.py --server.headless true --server.port 8501` | health interno do Streamlit respondeu 200 | não comprova API/DB ativos simultaneamente |
+
+Os 32 testes incluem a fronteira HTTP da API, fallback local do dashboard,
+resolução de `GOOGLE_API_KEY` e dollar quoting nomeado. Os testes HTTP usam
+pool/grafo controlados e não substituem uma execução real com PostgreSQL e LLM.
+O comando Ruff incluindo `scripts/` encontrou `I001` no arquivo não versionado
+`scripts/build_report_pdf.py`; ele não foi alterado por pertencer a outro
+trabalho presente no diretório.
+
+O resultado real Gemini do Anexo B e os artefatos C–F estão descritos em
+`docs/evaluation.md` e `docs/requirements.md`. As chamadas OpenAI/OpenRouter
+dos testes locais são mocks determinísticos; não devem ser apresentadas como
+geração remota executada.
 
 ## Instalação auxiliar dos parsers
 
@@ -83,7 +109,9 @@ Proposta para a próxima etapa, ainda não aceita como decisão final:
 4. usar SQLGlot apenas nos fragmentos SQL que forem isolados com segurança;
 5. marcar construções não reconhecidas, em vez de alegar AST completa.
 
-Essa estratégia é compatível com B–F, mas ainda não demonstra extração semântica completa nem equivalência comportamental.
+Essa estratégia é compatível com B–F e foi implementada como IR/scanner
+estrutural do projeto. Ela ainda não demonstra extração semântica completa nem
+equivalência comportamental para D–F.
 
 ## Fontes oficiais consultadas
 
@@ -93,4 +121,9 @@ Essa estratégia é compatível com B–F, mas ainda não demonstra extração s
 
 ## Critério de conclusão
 
-A inicialização do CLI, a aplicação customizada, as rotas e o PostgreSQL foram demonstrados localmente. A cobertura real dos cinco invólucros foi medida e o bloqueio do corpo PL/pgSQL foi identificado precisamente. A etapa de validação técnica pode avançar para a definição de arquitetura, desde que a proposta de parser permaneça explicitamente limitada e não seja apresentada como AST completa.
+A inicialização do CLI, a aplicação customizada, as rotas e o PostgreSQL foram
+demonstrados localmente. A cobertura real dos cinco invólucros foi medida e o
+bloqueio de uma AST procedural completa foi identificado precisamente. A etapa
+de validação técnica está concluída com a limitação de que os experimentos de
+SQLGlot/pglast são históricos e a implementação atual usa uma IR própria; não
+se deve apresentar nenhuma delas como AST completa.

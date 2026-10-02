@@ -16,6 +16,7 @@ sintática com equivalência comportamental.
 - Engenheiro responsável pela modernização.
 - Revisor técnico que audita decisões e evidências.
 - Operador que diagnostica uma execução.
+- Equipe de plataforma que compara provedores e acompanha métricas de avaliação.
 
 ## Não objetivos
 

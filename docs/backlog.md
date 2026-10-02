@@ -7,8 +7,9 @@
 | US-03 | Identificar falha de geração ou validação | Alta | Concluída |
 | US-04 | Reproduzir métricas sem executar código gerado | Média | Concluída |
 | US-05 | Comparar rotina original e tradução em banco isolado | Alta | B/C concluído; D–F pendente |
-| US-06 | Consultar traces por nó e custos do LLM | Média | Pendente: Langfuse |
+| US-06 | Consultar traces por nó e custos do LLM | Média | Parcial: adaptador Langfuse opcional; trace remoto e screenshot pendentes |
 | US-07 | Usar dependência Python injetada no Anexo F | Alta | Pendente; ADR-013 |
 | US-08 | Recuperar falha de crash automaticamente | Baixa | Fora da implementação atual |
+| US-09 | Submeter SQL, consultar métricas e auditar falhas em uma tela interna | Média | Implementada em `dashboard.py` com três abas e tratamento de API offline |
 
 Itens pendentes exigem evidência própria; não são aceitos por estarem listados.

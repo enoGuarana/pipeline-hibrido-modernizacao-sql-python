@@ -8,13 +8,14 @@ Pipeline HTTP para modernização assistida de PL/pgSQL com rastreabilidade.
 
 | ID | Requisito | Estado |
 |---|---|---|
-| PRD-01 | Receber `source_code` e `schema` opcional | Implementado |
+| PRD-01 | Receber `source_code`, `schema` e configuração opcional de provedor | Implementado |
 | PRD-02 | Executar parsing, análise, geração e validação | Implementado no fluxo documentado |
 | PRD-03 | Persistir execução antes e depois do processamento | Implementado |
 | PRD-04 | Retornar código e relatório por etapa | Implementado |
 | PRD-05 | Limitar reparo a uma tentativa | Implementado |
 | PRD-06 | Avaliar resultados exportados | Implementado |
 | PRD-07 | Demonstrar equivalência B–F | Parcial: B/C executados; D–F pendentes |
+| PRD-08 | Apoiar operação humana por dashboard e observabilidade opcional | Parcial: dashboard implementado; trace remoto pendente |
 
 ## Restrições
 

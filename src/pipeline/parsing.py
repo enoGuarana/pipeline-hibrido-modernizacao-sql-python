@@ -89,7 +89,7 @@ def _parameters(raw: str) -> list[ParameterContract]:
     return result
 
 
-def _wrapper(source: str) -> tuple[re.Match[str], str, str] | None:
+def _wrapper(source: str) -> tuple[re.Match[str], str, str, str] | None:
     match = re.search(
         r"CREATE\s+(?:OR\s+REPLACE\s+)?(?P<kind>FUNCTION|PROCEDURE)\s+"
         r"(?P<name>[\w.]+)\s*\(",
@@ -119,22 +119,29 @@ def _wrapper(source: str) -> tuple[re.Match[str], str, str] | None:
                 break
     if close_index < 0:
         return None
-    body_match = re.search(r"\$\$(?P<body>.*?)\$\$", source[close_index:], re.IGNORECASE | re.DOTALL)
+    # PL/pgSQL dumps commonly use named dollar quotes such as $BODY$ instead
+    # of $$. Match the exact opening tag again so unrelated tags inside the
+    # procedure body do not close it accidentally.
+    header_and_body = source[close_index + 1 :]
+    as_match = re.search(r"\bAS\s*", header_and_body, re.IGNORECASE)
+    if as_match is None:
+        return None
+    body_match = re.match(
+        r"(?P<tag>\$(?:[A-Za-z_][A-Za-z0-9_]*)?\$)(?P<body>.*?)(?P=tag)",
+        header_and_body[as_match.end() :],
+        re.DOTALL,
+    )
     if body_match is None:
         return None
-    header_end = close_index + body_match.start()
-    return match, source[open_index + 1 : close_index], source[close_index + 1 : header_end]
+    header = header_and_body[: as_match.start()]
+    return match, source[open_index + 1 : close_index], header, body_match.group("body")
 
 
 def parse_routine(source: str) -> tuple[dict[str, Any], IntermediateRepresentation] | None:
     found = _wrapper(source)
     if found is None:
         return None
-    match, raw_parameters, header = found
-    body_match = re.search(r"\$\$(?P<body>.*?)\$\$", source, re.IGNORECASE | re.DOTALL)
-    if body_match is None:
-        return None
-    body = body_match.group("body")
+    match, raw_parameters, header, body = found
     masked = _mask_comments_and_strings(body)
     language_match = re.search(r"LANGUAGE\s+(\w+)", header, re.IGNORECASE)
     returns_match = re.search(r"RETURNS\s+(.+?)(?=\s+LANGUAGE\b|\s+AS\b|$)", header, re.IGNORECASE | re.DOTALL)

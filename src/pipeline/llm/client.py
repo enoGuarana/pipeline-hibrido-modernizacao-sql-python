@@ -113,7 +113,9 @@ async def generate(
         tls_context = truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
         http_client = httpx.Client(verify=tls_context)
         client = genai.Client(
-            api_key=api_key,
+            # Use the resolved value so GOOGLE_API_KEY works as the documented
+            # fallback when neither the request nor GEMINI_API_KEY provides it.
+            api_key=resolved_key,
             http_options=types.HttpOptions(
                 timeout=timeout_ms,
                 httpx_client=http_client,
