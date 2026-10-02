@@ -1,15 +1,21 @@
-"""Small, configurable OpenAI Responses API boundary."""
+"""Small, configurable Gemini API boundary."""
 
 from __future__ import annotations
 
 import asyncio
 import os
+import ssl
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-PROMPT_VERSION = "modernize_v1"
-PROMPT_PATH = Path(__file__).parent / "prompts" / "modernize_v1.txt"
+import httpx
+import truststore
+from google import genai
+from google.genai import types
+
+PROMPT_VERSION = "modernize_v2"
+PROMPT_PATH = Path(__file__).parent / "prompts" / "modernize_v2.txt"
 
 
 class LLMError(RuntimeError):
@@ -43,34 +49,50 @@ def _without_markdown_fences(value: str) -> str:
 
 
 async def generate(*, prompt: str) -> LLMResult:
-    api_key = os.getenv("OPENAI_API_KEY")
+    api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
-        raise LLMError("OPENAI_API_KEY is not configured")
-    model = os.getenv("OPENAI_MODEL", "gpt-5.5")
-    timeout = float(os.getenv("OPENAI_TIMEOUT_SECONDS", "60"))
+        raise LLMError("GEMINI_API_KEY is not configured")
+    model = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+    timeout_ms = int(float(os.getenv("GEMINI_TIMEOUT_SECONDS", "60")) * 1000)
+    http_client: httpx.Client | None = None
+    client: genai.Client | None = None
     try:
-        from openai import OpenAI
-
-        client = OpenAI(api_key=api_key, timeout=timeout)
+        tls_context = truststore.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        http_client = httpx.Client(verify=tls_context)
+        client = genai.Client(
+            api_key=api_key,
+            http_options=types.HttpOptions(
+                timeout=timeout_ms,
+                httpx_client=http_client,
+            ),
+        )
         response = await asyncio.to_thread(
-            client.responses.create,
+            client.models.generate_content,
             model=model,
-            input=prompt,
-            store=False,
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
+                response_mime_type="text/plain",
+            ),
         )
     except Exception as exc:
-        raise LLMError(f"OpenAI request failed: {exc}") from exc
-    code = _without_markdown_fences(getattr(response, "output_text", "") or "")
+        raise LLMError(f"Gemini request failed: {exc}") from exc
+    finally:
+        if client is not None:
+            client.close()
+        elif http_client is not None:
+            http_client.close()
+    code = _without_markdown_fences(getattr(response, "text", "") or "")
     if not code:
-        raise LLMError("OpenAI returned an empty response")
-    usage = getattr(response, "usage", None)
+        raise LLMError("Gemini returned an empty response")
+    usage = getattr(response, "usage_metadata", None)
     return LLMResult(
         code=code,
         metadata={
-            "provider": "openai",
-            "model": getattr(response, "model", model),
+            "provider": "gemini",
+            "model": getattr(response, "model_version", None) or model,
             "prompt_version": PROMPT_VERSION,
-            "response_id": getattr(response, "id", None),
-            "usage": usage.model_dump() if hasattr(usage, "model_dump") else None,
+            "response_id": getattr(response, "response_id", None),
+            "usage": usage.model_dump(exclude_none=True) if hasattr(usage, "model_dump") else None,
         },
     )

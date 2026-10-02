@@ -15,10 +15,10 @@ def export_run_artifact(run: Mapping[str, Any], output_root: Path) -> Path:
     report = run.get("report")
     if not isinstance(report, Mapping):
         raise ArtifactExportError("run report is missing or invalid")
-    if run.get("status") not in {"success", "partial"}:
-        raise ArtifactExportError("only completed success or partial runs can be exported")
-    if report.get("generation_mode") != "openai":
-        raise ArtifactExportError("run is not a real OpenAI generation")
+    if run.get("status") not in {"success", "partial", "failure"}:
+        raise ArtifactExportError("only terminal runs can be exported")
+    if report.get("generation_mode") != "gemini":
+        raise ArtifactExportError("run is not a real Gemini generation")
     generated_code = run.get("generated_code")
     if not isinstance(generated_code, str) or not generated_code.strip():
         raise ArtifactExportError("run has no generated code")

@@ -2,8 +2,8 @@
 
 ## Status
 
-Aceita com limitação explícita. A integração alcançou o provedor, mas ainda não
-produziu uma geração real bem-sucedida.
+Substituída pelo ADR-012. A evidência histórica da tentativa OpenAI permanece
+válida e não deve ser apagada.
 
 ## Contexto
 
@@ -46,7 +46,6 @@ exportação elegível e rejeição de geração simulada.
 
 ## Condição de revisão
 
-Revisar após a primeira geração real bem-sucedida do Anexo B. Registrar modelo,
-versão do prompt, uso realmente retornado, código, validação e limitações. Erros,
-timeout, resposta vazia ou conteúdo fora do contrato devem continuar encerrando
-a execução como falha.
+A decisão foi revisada após o usuário optar por uma chave do Google AI Studio.
+Os requisitos de rastreabilidade, tratamento de erro e validação continuam
+ativos na integração sucessora.

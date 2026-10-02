@@ -90,11 +90,11 @@ Isso fornece evidência parcial para O5 e O6. Ainda não é evidência de geraç
 
 ## Atualização de geração, reparo e rastreabilidade
 
-O cliente OpenAI foi integrado por uma fronteira pequena, com prompt versionado e modelo configurável por ambiente. A execução real permanece pendente até haver uma chave válida. O reparo limitado tem uma única tentativa e preserva os relatórios anteriores. Os relatórios agora incluem hashes SHA-256 da entrada, schema e código gerado quando disponíveis.
+O cliente Gemini foi integrado por uma fronteira pequena, com prompt versionado e modelo configurável por ambiente. A decisão OpenAI anterior foi substituída sem apagar sua evidência histórica. O reparo limitado tem uma única tentativa e preserva os relatórios anteriores. Os relatórios incluem hashes SHA-256 da entrada, schema e código gerado quando disponíveis.
 
 ## Pendências objetivas após as decisões validadas
 
-- **Geração real:** executar uma chamada B com `OPENAI_API_KEY` e registrar modelo, prompt e uso realmente retornados.
+- **Geração real:** executar uma chamada B com `GEMINI_API_KEY` e registrar modelo, prompt e uso realmente retornados.
 - **Equivalência:** instalar schema/rotinas originais no banco de avaliação, executar cenários B–F e comparar retorno, efeitos, exceções e transações.
 - **Evaluation/observabilidade:** bônus planejados; ainda não reivindicados por falta de traces e resultados reais.
 - **Runtime:** a CLI atual funciona, mas `langgraph-api 0.10.3` está em EOL; a tentativa de atualização para `0.15.1` foi revertida por conflitos documentados no ADR-010.

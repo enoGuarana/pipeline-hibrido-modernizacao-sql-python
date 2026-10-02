@@ -124,3 +124,22 @@ A tentativa de usar `langgraph-api 0.15.1` foi registrada no ADR-010 e revertida
 ## Evidência da primeira chamada OpenAI
 
 Uma chamada real do Anexo B alcançou a Responses API, mas terminou controladamente com `429 insufficient_quota`. O histórico recebeu `run_id=6` como `failure`, sem código gerado. Isso confirma o caminho de autenticação, requisição e persistência da falha, mas não confirma geração real, validação do código ou equivalência.
+
+## Substituição do provedor por Gemini
+
+- O usuário aprovou o SDK nativo `google-genai`. `gemini-2.5-pro` foi recusado
+  para novos usuários no `run_id=7`; o usuário então aprovou
+  `gemini-3.1-pro-preview` com a limitação de preview explícita.
+- O modelo sucessor foi recomendado pela própria resposta do provedor.
+- `gemini-3.1-pro-preview` retornou quota gratuita igual a zero no `run_id=8`;
+  `gemini-2.5-flash` foi então recusado para novos usuários no `run_id=9`.
+- A resposta do provedor recomendou `gemini-3.8-flash`, adotado como padrão
+  operacional fixo para a próxima verificação.
+- O `run_id=11` obteve geração real com `gemini-3.8-flash`, prompt
+  `modernize_v1` e uso reportado, mas falhou no Ruff; o reparo recebeu `503`.
+- O artefato de falha foi preservado em `results/run-11` para auditoria.
+- `modernize_v2` passou a exigir Python 3.14 e Ruff, sem correção manual da
+  saída anterior. As tentativas `12` e `13` receberam `503` antes da geração.
+- `truststore` foi adotado para preservar a verificação TLS usando o armazenamento nativo do Windows; `verify=False` foi rejeitado.
+- O ADR-012 substitui o ADR-009 para novas gerações sem apagar a tentativa OpenAI anterior.
+- A interface interna do grafo permanece estável e os metadados disponíveis do Gemini continuam rastreáveis.

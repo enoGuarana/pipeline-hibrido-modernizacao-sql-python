@@ -29,7 +29,7 @@ def test_metrics_keep_failures_and_simulated_runs_in_denominator():
             {
                 "id": 3,
                 "status": "success",
-                "report": _report(attempts=2, valid=True, mode="openai", equivalence="tested"),
+                "report": _report(attempts=2, valid=True, mode="gemini", equivalence="tested"),
             },
         ]
     )

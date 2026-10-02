@@ -10,12 +10,13 @@ dependencies = [
     "langgraph==1.2.12",
     "langgraph-cli[inmem]==0.4.32",
     "langgraph-api==0.10.3",
-    "openai==2.54.0",
+    "google-genai==2.27.0",
+    "httpx==0.28.1",
+    "truststore==0.10.4",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "httpx>=0.28,<1",
     "pytest>=8,<9",
     "ruff>=0.9,<1",
 ]

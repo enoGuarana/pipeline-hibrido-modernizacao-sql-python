@@ -131,7 +131,7 @@ async def generation_node(state: PipelineState) -> dict[str, Any]:
     stage = "generation"
     if state.get("status") == "failure":
         return _skipped(state, stage)
-    if os.getenv("OPENAI_API_KEY"):
+    if os.getenv("GEMINI_API_KEY"):
         try:
             result = await generate(
                 prompt=build_prompt(
@@ -148,7 +148,10 @@ async def generation_node(state: PipelineState) -> dict[str, Any]:
             "generated_code": result.code,
             "generation_metadata": result.metadata,
             "generation_attempts": 1,
-            "stage_reports": _with_stage(state, _stage(stage, "success", decisions=["Use OpenAI Responses API with versioned context"])),
+            "stage_reports": _with_stage(
+                state,
+                _stage(stage, "success", decisions=["Use Gemini API with versioned context"]),
+            ),
             "status": state.get("status", "pending"),
         }
     routine_name = state.get("ir", {}).get("routine_name") or "generated_routine"
@@ -225,7 +228,7 @@ def _route_after_validation(state: PipelineState) -> str:
     if any(error.get("code", "").startswith("LLM_") for error in errors):
         return "finalization"
     validation_error = any(error.get("code", "").startswith("VALIDATION_") for error in errors)
-    if validation_error and os.getenv("OPENAI_API_KEY") and state.get("generation_attempts", 1) < 2:
+    if validation_error and os.getenv("GEMINI_API_KEY") and state.get("generation_attempts", 1) < 2:
         return "repair"
     return "finalization"
 

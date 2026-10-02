@@ -13,7 +13,7 @@ def _real_run():
         "status": "success",
         "created_at": "2026-10-02T10:00:00Z",
         "report": {
-            "generation_mode": "openai",
+            "generation_mode": "gemini",
             "generation_metadata": {"model": "test-model", "prompt_version": "modernize_v1"},
             "equivalence": "not_tested",
             "traceability": {"source_sha256": "source", "generated_code_sha256": "generated"},
@@ -35,5 +35,17 @@ def test_export_rejects_simulated_run(tmp_path):
     run = _real_run()
     run["report"]["generation_mode"] = "simulated"
 
-    with pytest.raises(ArtifactExportError, match="not a real OpenAI generation"):
+    with pytest.raises(ArtifactExportError, match="not a real Gemini generation"):
         export_run_artifact(run, tmp_path)
+
+
+def test_export_preserves_real_failed_attempt_with_generated_code(tmp_path):
+    run = _real_run()
+    run["status"] = "failure"
+    run["report"]["errors"] = [{"code": "VALIDATION_LINT", "stage": "validation"}]
+
+    artifact_dir = export_run_artifact(run, tmp_path)
+
+    assert (artifact_dir / "generated.py").exists()
+    metadata = json.loads((artifact_dir / "metadata.json").read_text(encoding="utf-8"))
+    assert metadata["status"] == "failure"

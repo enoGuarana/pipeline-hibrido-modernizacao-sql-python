@@ -38,7 +38,7 @@ flowchart TB
     Parse --> IR[IR tipada]
     IR --> Analysis[Análise semântica]
     Analysis --> Prompt[Contexto versionado]
-    Prompt --> Provider[Cliente OpenAI]
+    Prompt --> Provider[Cliente Gemini]
     Provider --> Validation[ast.parse + Ruff]
     Validation --> History
     Graph --> Evaluation[pipeline.evaluation]

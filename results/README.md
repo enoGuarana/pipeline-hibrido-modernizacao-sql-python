@@ -14,6 +14,10 @@ $env:DATABASE_URL = "postgresql://postgres:postgres@localhost:55432/modernizatio
 .\.venv\Scripts\python.exe scripts\export_result.py <run_id>
 ```
 
-O exportador recusa execuções simuladas, falhas, código ausente e sobrescrita
-de um diretório existente. O bundle contém `source.sql`, `generated.py`,
+O exportador recusa execuções simuladas, código ausente e sobrescrita
+de um diretório existente. Falhas reais com código são preservadas para manter
+as tentativas auditáveis. O bundle contém `source.sql`, `generated.py`,
 `report.json` e `metadata.json`; ele não executa o código gerado.
+
+Para novas execuções, geração real significa `generation_mode=gemini`. A
+tentativa OpenAI anterior permanece apenas como evidência histórica de falha.

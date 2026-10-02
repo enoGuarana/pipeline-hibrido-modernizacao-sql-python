@@ -1,4 +1,4 @@
-"""Export a persisted real OpenAI run to results/run-<id>."""
+"""Export a persisted real Gemini run to results/run-<id>."""
 
 import argparse
 import asyncio

@@ -94,7 +94,7 @@ async def test_parse_failure_routes_to_finalization_before_generation():
 def test_validation_route_allows_only_one_repair(monkeypatch):
     from pipeline import graph
 
-    monkeypatch.setenv("OPENAI_API_KEY", "test-only")
+    monkeypatch.setenv("GEMINI_API_KEY", "test-only")
     failed = {"errors": [{"code": "VALIDATION_SYNTAX"}], "generation_attempts": 1}
     exhausted = {"errors": [{"code": "VALIDATION_SYNTAX"}], "generation_attempts": 2}
 
@@ -107,10 +107,10 @@ async def test_repair_preserves_attempt_count_and_marks_metadata(monkeypatch):
     from pipeline import graph
     from pipeline.llm.client import LLMResult
 
-    monkeypatch.setenv("OPENAI_API_KEY", "test-only")
+    monkeypatch.setenv("GEMINI_API_KEY", "test-only")
 
     async def fake_generate(*, prompt):
-        return LLMResult("def repaired():\n    return 1\n", {"provider": "openai", "model": "test"})
+        return LLMResult("def repaired():\n    return 1\n", {"provider": "gemini", "model": "test"})
 
     monkeypatch.setattr(graph, "generate", fake_generate)
     result = await graph.repair_node(

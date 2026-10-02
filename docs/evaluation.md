@@ -37,6 +37,17 @@ comportamental isolado está em `pipeline.behavioral_evaluation`. O bônus de
 Eval está parcialmente implementado; Langfuse e equivalência B–F continuam
 pendentes porque ainda não há traces reais nem execução comparável autorizada.
 
+A primeira saída real Gemini foi persistida no `run_id=11` e exportada para
+`results/run-11`. Ela não foi aprovada estaticamente: houve falha Ruff e o
+reparo terminou com indisponibilidade do provedor. As tentativas seguintes
+também receberam `503`; elas permanecem no denominador como falhas.
+
+Consulta local após o `run_id=13`: 12 execuções terminais, uma aprovação
+estática na primeira tentativa — proveniente do fluxo simulado —, zero após
+reparo, quatro gerações simuladas, uma geração real e zero equivalências
+comportamentais testadas. Há sete erros de geração, um de validação e um de
+reparo; erros distintos da mesma execução são contados em seus estágios.
+
 O núcleo do comparador comportamental foi implementado em
 `pipeline.behavioral_evaluation`. Ele compara retorno, estado das tabelas e
 erro observado. IDs, timestamps ou outros valores só são normalizados quando
@@ -44,7 +55,7 @@ o cenário os declara por caminho explícito; diferenças não declaradas contin
 causando reprovação. O comparador não executa código gerado e não cria
 observações fictícias.
 
-- A execução real com OpenAI registrada até esta etapa terminou com erro de
+- A tentativa histórica com OpenAI registrada terminou com erro de
   quota (`429`); ela não é contada como geração real bem-sucedida.
 - As execuções simuladas servem para verificar o fluxo e a persistência, não
   para reivindicar qualidade de tradução.

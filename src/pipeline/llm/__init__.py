@@ -1,1 +1,1 @@
-"""OpenAI integration boundary."""
+"""Provider-independent LLM integration boundary."""
