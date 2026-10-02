@@ -109,7 +109,8 @@ async def test_repair_preserves_attempt_count_and_marks_metadata(monkeypatch):
 
     monkeypatch.setenv("GEMINI_API_KEY", "test-only")
 
-    async def fake_generate(*, prompt, **kwargs):
+    async def fake_generate(*, prompt="", **_kwargs):
+        _ = prompt
         return LLMResult("def repaired():\n    return 1\n", {"provider": "gemini", "model": "test"})
 
     monkeypatch.setattr(graph, "generate", fake_generate)

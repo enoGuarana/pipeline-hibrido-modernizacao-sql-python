@@ -61,7 +61,7 @@ def calculate_metrics(records: Iterable[Mapping[str, Any]]) -> EvaluationMetrics
         mode = report.get("generation_mode")
         if mode == "simulated":
             simulated += 1
-        elif mode in {"openai", "gemini"}:
+        elif mode in {"openai", "gemini", "openrouter"}:
             real_generation += 1
 
     return {

@@ -67,7 +67,7 @@ async def test_modernize_persists_success_without_exposing_api_key(monkeypatch):
     monkeypatch.setattr(api.app.state, "graph", FakeGraph(), raising=False)
     monkeypatch.setattr(api, "create_pending_run", fake_create_pending_run)
     monkeypatch.setattr(api, "finalize_run", fake_finalize_run)
-    monkeypatch.setattr(api, "observation", lambda *args, **kwargs: nullcontext(None))
+    monkeypatch.setattr(api, "observation", lambda *_args, **_kwargs: nullcontext(None))
 
     response = await _request(
         "POST",
@@ -96,21 +96,22 @@ async def test_modernize_persists_success_without_exposing_api_key(monkeypatch):
 async def test_modernize_finalizes_unexpected_graph_failure(monkeypatch):
     finalized = {}
 
-    async def fake_create_pending_run(pool, *, source_code, report):
+    async def fake_create_pending_run(_pool, *, source_code=None, report=None):
+        _ = (source_code, report)
         return 43
 
-    async def fake_finalize_run(pool, **kwargs):
+    async def fake_finalize_run(_pool, **kwargs):
         finalized.update(kwargs)
 
     class FailingGraph:
-        async def ainvoke(self, state):
+        async def ainvoke(self, _state):
             raise RuntimeError("unexpected graph failure")
 
     monkeypatch.setattr(api.app.state, "db_pool", object(), raising=False)
     monkeypatch.setattr(api.app.state, "graph", FailingGraph(), raising=False)
     monkeypatch.setattr(api, "create_pending_run", fake_create_pending_run)
     monkeypatch.setattr(api, "finalize_run", fake_finalize_run)
-    monkeypatch.setattr(api, "observation", lambda *args, **kwargs: nullcontext(None))
+    monkeypatch.setattr(api, "observation", lambda *_args, **_kwargs: nullcontext(None))
 
     response = await _request(
         "POST",
@@ -126,7 +127,7 @@ async def test_modernize_finalizes_unexpected_graph_failure(monkeypatch):
 
 @pytest.mark.anyio
 async def test_evaluation_keeps_terminal_failures_in_denominator(monkeypatch):
-    async def fake_fetch_evaluation_runs(pool):
+    async def fake_fetch_evaluation_runs(_pool):
         return [
             {
                 "id": 7,

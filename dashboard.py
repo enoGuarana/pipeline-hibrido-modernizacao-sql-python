@@ -97,7 +97,7 @@ def _render_submission_tab() -> None:
         height=360,
         placeholder="CREATE OR REPLACE FUNCTION ...",
     )
-    provider = st.selectbox("Provedor da LLM", ["gemini", "openrouter"])
+    provider = st.selectbox("Provedor da LLM", ["gemini", "openrouter", "openai"])
 
     if st.button("Executar Modernização", type="primary"):
         if not source_code.strip():
