@@ -39,13 +39,19 @@ pendentes porque ainda não há traces reais nem execução comparável autoriza
 
 A primeira saída real Gemini foi persistida no `run_id=11` e exportada para
 `results/run-11`. Ela não foi aprovada estaticamente: houve falha Ruff e o
-reparo terminou com indisponibilidade do provedor. As tentativas seguintes
-também receberam `503`; elas permanecem no denominador como falhas.
+reparo terminou com indisponibilidade do provedor. O `run_id=17`, já com
+`gemini-3.5-flash-lite`, gerou e reparou código, mas o resultado final ainda
+falhou no Ruff por ordenação de imports; ele está em `results/run-17`.
 
-Consulta local após o `run_id=13`: 12 execuções terminais, uma aprovação
-estática na primeira tentativa — proveniente do fluxo simulado —, zero após
-reparo, quatro gerações simuladas, uma geração real e zero equivalências
-comportamentais testadas. Há sete erros de geração, um de validação e um de
+O `run_id=18` usou `gemini-3.5-flash-lite` e `modernize_v3`. Foi aprovado em
+`ast.parse` e Ruff na primeira tentativa e está preservado em `results/run-18`.
+O provedor informou 596 tokens de prompt, 149 tokens de saída e 745 totais.
+O código não foi executado e `equivalence` continua `not_tested`.
+
+Consulta local após o `run_id=18`: 17 execuções terminais, duas aprovações
+estáticas na primeira tentativa — uma simulada e uma real —, zero após reparo,
+quatro gerações simuladas, três gerações reais com código e zero equivalências
+comportamentais testadas. Há dez erros de geração, dois de validação e um de
 reparo; erros distintos da mesma execução são contados em seus estágios.
 
 O núcleo do comparador comportamental foi implementado em
@@ -62,7 +68,8 @@ observações fictícias.
 - Ainda não há harness de equivalência comportamental B–F em banco isolado;
   `behavioral_equivalence_tested` permanece zero até que esses cenários sejam
   realmente executados.
-- A execução B–F permanece bloqueada por falta de rotinas legadas instaladas,
-  fixtures de estado/entrada aprovadas e geração real disponível para comparar.
+- A execução comportamental B–F permanece bloqueada por falta de rotinas
+  legadas instaladas e fixtures de estado/entrada aprovadas. A disponibilidade
+  de geração real foi demonstrada para B, mas C–F ainda não foram gerados.
 - Modelo, versão do prompt e metadados de uso permanecem nos relatórios de
   cada execução quando o provedor os disponibiliza.

@@ -15,9 +15,11 @@ A API registra a execução antes do processamento e executa um grafo LangGraph 
 ## Limitações a admitir
 
 - `langgraph-api 0.10.3` está em EOL; `0.15.1` apresentou conflitos no conjunto verificado.
-- A tentativa OpenAI terminou em `429`. O Gemini gerou código real no
-  `run_id=11`, mas o resultado falhou no Ruff e
-  o reparo recebeu `503`; isso comprova integração, não aprovação estática.
+- A tentativa OpenAI terminou em `429`. O Gemini gerou código real com
+  `gemini-3.8-flash` no `run_id=11`, mas o resultado falhou no Ruff e o reparo
+  recebeu `503`. Após indisponibilidade recorrente, `gemini-3.5-flash-lite`
+  produziu o `run_id=18`, aprovado em `ast.parse` e Ruff na primeira tentativa.
+  Isso comprova integração e validade estática, não equivalência.
 - Não há equivalência comportamental publicada para B–F.
 - O parser não é AST completa de PL/pgSQL.
 - Evaluation e observabilidade externa ainda são bônus futuros.
@@ -25,8 +27,8 @@ A API registra a execução antes do processamento e executa um grafo LangGraph 
 ## Evolução para produção
 
 1. Atualizar e validar uma combinação suportada do runtime LangGraph.
-2. Executar geração real e registrar uso/custos disponíveis.
-3. Criar harness comportamental isolado para B–F.
+2. Executar e revisar gerações reais de C–F, registrando uso disponível.
+3. Completar o harness comportamental isolado para B–F.
 4. Implementar evaluation e observabilidade com evidência real.
 5. Tratar recuperação de crashes e operação segura de credenciais.
 

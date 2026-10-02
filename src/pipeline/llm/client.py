@@ -14,8 +14,8 @@ import truststore
 from google import genai
 from google.genai import types
 
-PROMPT_VERSION = "modernize_v2"
-PROMPT_PATH = Path(__file__).parent / "prompts" / "modernize_v2.txt"
+PROMPT_VERSION = "modernize_v3"
+PROMPT_PATH = Path(__file__).parent / "prompts" / "modernize_v3.txt"
 
 
 class LLMError(RuntimeError):
@@ -52,7 +52,7 @@ async def generate(*, prompt: str) -> LLMResult:
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise LLMError("GEMINI_API_KEY is not configured")
-    model = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+    model = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
     timeout_ms = int(float(os.getenv("GEMINI_TIMEOUT_SECONDS", "60")) * 1000)
     http_client: httpx.Client | None = None
     client: genai.Client | None = None

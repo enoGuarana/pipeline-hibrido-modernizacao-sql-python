@@ -140,6 +140,26 @@ Uma chamada real do Anexo B alcançou a Responses API, mas terminou controladame
 - O artefato de falha foi preservado em `results/run-11` para auditoria.
 - `modernize_v2` passou a exigir Python 3.14 e Ruff, sem correção manual da
   saída anterior. As tentativas `12` e `13` receberam `503` antes da geração.
+- O `run_id=14` confirmou nova indisponibilidade do `gemini-3.8-flash`. Valores
+  temporários de modelo nos processos dos `run_id=15` e `16` foram sobrescritos
+  pelo `.env` carregado pelo LangGraph CLI; os logs mostraram que essas chamadas
+  ainda atingiram `gemini-3.8-flash`.
+- O catálogo da API e a documentação oficial confirmaram
+  `gemini-3.5-flash-lite`. Uma sondagem mínima passou e o modelo foi adotado
+  explicitamente no `.env` local e como padrão versionado.
+- O `run_id=17`, com `modernize_v2`, gerou e reparou código real, mas terminou
+  em Ruff `I001`; a saída foi preservada em `results/run-17` sem correção manual.
+- O prompt `modernize_v3` tornou explícitas a ordem Ruff/isort dos imports e a
+  fidelidade ao contrato de retorno. O `run_id=18` passou em `ast.parse` e Ruff
+  na primeira tentativa, foi persistido como `success` e exportado para
+  `results/run-18`. Essa conclusão fecha geração real e validação estática de B,
+  mas não equivalência nem os resultados C–F.
+- A verificação dos bundles detectou tradução automática de `LF` para `CRLF`
+  no Windows. O exportador passou a gravar texto com `newline=""`; um teste
+  compara os bytes exportados e os hashes registrados. Os bundles 17 e 18 foram
+  reexportados do PostgreSQL, sem alteração manual do código gerado. O
+  `.gitattributes` fixa `LF` em `results/**` para preservar os hashes após
+  checkout em Windows.
 - `truststore` foi adotado para preservar a verificação TLS usando o armazenamento nativo do Windows; `verify=False` foi rejeitado.
 - O ADR-012 substitui o ADR-009 para novas gerações sem apagar a tentativa OpenAI anterior.
 - A interface interna do grafo permanece estável e os metadados disponíveis do Gemini continuam rastreáveis.

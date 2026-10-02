@@ -36,7 +36,9 @@ $env:DATABASE_URL = "postgresql://postgres:postgres@localhost:55432/modernizatio
 langgraph dev --no-browser
 ```
 
-Para geração real, configure `GEMINI_API_KEY` e opcionalmente `GEMINI_MODEL`. Nunca registre a chave em arquivos ou logs.
+Para geração real, configure `GEMINI_API_KEY` e opcionalmente `GEMINI_MODEL`. O
+padrão verificado é `gemini-3.5-flash-lite`. Nunca registre a chave em arquivos
+versionados ou logs; o `.env` local é ignorado pelo Git.
 
 ## Limitação importante
 
@@ -44,4 +46,9 @@ Para geração real, configure `GEMINI_API_KEY` e opcionalmente `GEMINI_MODEL`. 
 
 ## Estado da primeira fatia
 
-O fluxo Anexo B está executável pelo grafo e pela rota `/modernize`, com persistência de sucesso/falha. A geração atual é simulada e deliberadamente não é uma tradução equivalente. Os testes determinísticos estão em `tests/test_graph.py`; os resultados e limites estão em `docs/implementation-plan.md` e `docs/requirements.md`.
+O fluxo Anexo B está executável pelo grafo e pela rota `/modernize`, com
+persistência de sucesso/falha. O `run_id=18` produziu geração real com
+`gemini-3.5-flash-lite`, prompt `modernize_v3` e aprovação de `ast.parse` e
+Ruff na primeira tentativa. O artefato está em `results/run-18`. Essa evidência
+é de validade estática, não de equivalência comportamental. Sem chave, os
+testes e o desenvolvimento continuam usando um stub explicitamente simulado.

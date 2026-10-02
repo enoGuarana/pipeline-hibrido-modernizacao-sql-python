@@ -21,3 +21,11 @@ as tentativas auditáveis. O bundle contém `source.sql`, `generated.py`,
 
 Para novas execuções, geração real significa `generation_mode=gemini`. A
 tentativa OpenAI anterior permanece apenas como evidência histórica de falha.
+
+Artefatos atuais:
+
+- `run-11`: geração real com falha Ruff e reparo indisponível;
+- `run-17`: geração e reparo reais, com falha Ruff final de ordenação de imports;
+- `run-18`: geração real aprovada em `ast.parse` e Ruff na primeira tentativa.
+
+Nenhum desses bundles comprova equivalência comportamental.

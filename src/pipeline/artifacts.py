@@ -46,14 +46,16 @@ def export_run_artifact(run: Mapping[str, Any], output_root: Path) -> Path:
             "The generated module was stored for review and was not executed by the API.",
         ],
     }
-    (artifact_dir / "source.sql").write_text(source_code, encoding="utf-8")
-    (artifact_dir / "generated.py").write_text(generated_code, encoding="utf-8")
+    (artifact_dir / "source.sql").write_text(source_code, encoding="utf-8", newline="")
+    (artifact_dir / "generated.py").write_text(generated_code, encoding="utf-8", newline="")
     (artifact_dir / "report.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2, default=str) + "\n",
         encoding="utf-8",
+        newline="",
     )
     (artifact_dir / "metadata.json").write_text(
         json.dumps(metadata, ensure_ascii=False, indent=2, default=str) + "\n",
         encoding="utf-8",
+        newline="",
     )
     return artifact_dir

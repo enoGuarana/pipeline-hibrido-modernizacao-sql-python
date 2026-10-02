@@ -8,5 +8,8 @@
 - A recuperação de uma queda de processo entre o registro `pending` e a finalização ainda não foi implementada.
 - O endpoint `/evaluation` e o comparador comportamental estão implementados, mas não existem ainda resultados de equivalência B–F.
 - A execução B–F depende de rotinas legadas instaladas no banco isolado, cenários aprovados e uma saída real para comparação.
-- `gemini-3.8-flash` produziu uma saída real B, mas ela falhou no lint; novas
-  tentativas foram afetadas por `503 UNAVAILABLE` e não há aprovação estática real ainda.
+- O `gemini-3.8-flash` apresentou indisponibilidade recorrente. O padrão foi
+  alterado para `gemini-3.5-flash-lite` depois de uma sondagem real e da
+  verificação no catálogo oficial.
+- O `run_id=18` do Anexo B passou em `ast.parse` e Ruff com geração real, mas
+  ainda não foi executado nem comparado comportamentalmente com a função original.
