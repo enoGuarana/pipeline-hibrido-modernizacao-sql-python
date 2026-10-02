@@ -96,6 +96,32 @@ async def fetch_evaluation_runs(pool: AsyncConnectionPool) -> list[dict[str, obj
     return [{"id": int(row[0]), "status": row[1], "report": row[2]} for row in rows]
 
 
+async def fetch_run_for_artifact(
+    pool: AsyncConnectionPool, run_id: int
+) -> dict[str, object] | None:
+    """Read one completed run for explicit result export."""
+    async with pool.connection() as connection, connection.cursor() as cursor:
+        await cursor.execute(
+            """
+            SELECT id, source_code, generated_code, report, status, created_at
+              FROM modernization_history
+             WHERE id = %s
+            """,
+            (run_id,),
+        )
+        row = await cursor.fetchone()
+    if row is None:
+        return None
+    return {
+        "id": int(row[0]),
+        "source_code": row[1],
+        "generated_code": row[2],
+        "report": row[3],
+        "status": row[4],
+        "created_at": row[5],
+    }
+
+
 @asynccontextmanager
 async def lifespan_pool() -> AsyncIterator[AsyncConnectionPool]:
     pool = make_pool()
