@@ -1,6 +1,12 @@
 from typing import Any, TypedDict
 
-from .contracts import ExecutionError, ExecutionStatus, IntermediateRepresentation, StageReport
+from .contracts import (
+    ExecutionError,
+    ExecutionStatus,
+    IntermediateRepresentation,
+    ProviderName,
+    StageReport,
+)
 
 
 class PipelineState(TypedDict, total=False):
@@ -9,6 +15,11 @@ class PipelineState(TypedDict, total=False):
     schema: str | None
     source_sha256: str
     schema_sha256: str | None
+    # Configuração escolhida na entrada; api_key é transitória e nunca vai para
+    # o relatório persistido.
+    provider: ProviderName
+    api_key: str | None
+    model_name: str | None
     parsed: dict[str, Any]
     ir: IntermediateRepresentation
     analysis: dict[str, Any]

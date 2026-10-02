@@ -99,6 +99,34 @@ $env:GEMINI_MODEL = "gemini-3.5-flash-lite"
 
 Nunca versione a chave nem a envie no corpo da requisição.
 
+### Escolher provedor por requisição
+
+O padrão é Gemini. A requisição pode selecionar `gemini`, `openrouter` ou
+`openai`, além de informar uma chave e um modelo específicos. A chave enviada
+tem prioridade; sem ela, o sistema consulta a variável do provedor no ambiente.
+
+```json
+{
+  "source_code": "CREATE FUNCTION ...",
+  "schema": null,
+  "provider": "openrouter",
+  "api_key": "chave-apenas-para-esta-execucao",
+  "model_name": "meta-llama/llama-3-8b-instruct"
+}
+```
+
+As chaves são usadas somente durante a execução e não são persistidas em
+`modernization_history`, relatórios ou metadados. O grafo continua com uma
+única chamada sequencial ao provedor selecionado.
+
+Variáveis de fallback:
+
+| Provedor | Chave | Modelo padrão |
+|---|---|---|
+| `gemini` | `GEMINI_API_KEY` ou `GOOGLE_API_KEY` | `GEMINI_MODEL` ou `gemini-3.5-flash-lite` |
+| `openrouter` | `OPENROUTER_API_KEY` | `OPENROUTER_MODEL` ou `openai/gpt-4o-mini` |
+| `openai` | `OPENAI_API_KEY` | `OPENAI_MODEL` ou `gpt-4o-mini` |
+
 ## Usar a API
 
 ```powershell
@@ -175,6 +203,10 @@ e [self-host com Docker Compose](https://langfuse.com/self-hosting/deployment/do
   disponível localmente.
 - **Gemini com prompt versionado:** permite geração rastreável; a saída ainda
   pode conter erros semânticos.
+- **Interface agnóstica de provedor:** mantém o SDK Gemini para o padrão e usa
+  `openai` com `base_url` do OpenRouter para APIs compatíveis; aumenta opções,
+  mas exige que o modelo escolhido aceite o formato de chat e o contrato de
+  saída textual.
 - **Parsing híbrido:** preserva SQL e marca construções desconhecidas; não é
   uma AST completa de PL/pgSQL.
 - **Um único reparo:** limita custo e ciclos infinitos; uma saída inválida é

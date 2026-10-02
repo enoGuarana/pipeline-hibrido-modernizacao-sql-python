@@ -5,6 +5,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
+from .contracts import ProviderName
 from .db import create_pending_run, fetch_evaluation_runs, finalize_run, lifespan_pool
 from .evaluation import calculate_metrics
 from .graph import build_graph
@@ -16,6 +17,9 @@ class ModernizeRequest(BaseModel):
     # contexto opcional e não dispara alterações automáticas no banco.
     source_code: str = Field(min_length=1)
     schema: str | None = None
+    provider: ProviderName = "gemini"
+    api_key: str | None = Field(default=None, repr=False)
+    model_name: str | None = None
 
 
 @asynccontextmanager
@@ -85,6 +89,8 @@ async def modernize(payload: ModernizeRequest, request: Request) -> JSONResponse
         "reason": "pipeline_started",
         "received_source_length": len(payload.source_code),
         "schema_provided": payload.schema is not None,
+        "provider": payload.provider,
+        "model_name": payload.model_name,
         "source_sha256": source_sha256,
         "schema_sha256": schema_sha256,
     }
@@ -104,6 +110,9 @@ async def modernize(payload: ModernizeRequest, request: Request) -> JSONResponse
         "run_id": run_id,
         "source_code": payload.source_code,
         "schema": payload.schema,
+        "provider": payload.provider,
+        "api_key": payload.api_key,
+        "model_name": payload.model_name,
         "source_sha256": source_sha256,
         "schema_sha256": schema_sha256,
         "status": "pending",

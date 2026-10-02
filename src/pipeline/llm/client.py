@@ -13,6 +13,7 @@ import httpx
 import truststore
 from google import genai
 from google.genai import types
+from openai import AsyncOpenAI
 
 PROMPT_VERSION = "modernize_v4"
 PROMPT_PATH = Path(__file__).parent / "prompts" / "modernize_v4.txt"
@@ -26,6 +27,35 @@ class LLMError(RuntimeError):
 class LLMResult:
     code: str
     metadata: dict[str, Any]
+
+
+def resolve_provider_config(
+    provider: str,
+    api_key: str | None = None,
+    model_name: str | None = None,
+) -> tuple[str | None, str]:
+    """Resolve request overrides first, then the provider-specific environment."""
+
+    if provider == "gemini":
+        return api_key or os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY"), model_name or os.getenv(
+            "GEMINI_MODEL", "gemini-3.5-flash-lite"
+        )
+    if provider == "openrouter":
+        return api_key or os.getenv("OPENROUTER_API_KEY"), model_name or os.getenv(
+            "OPENROUTER_MODEL", "openai/gpt-4o-mini"
+        )
+    if provider == "openai":
+        return api_key or os.getenv("OPENAI_API_KEY"), model_name or os.getenv(
+            "OPENAI_MODEL", "gpt-4o-mini"
+        )
+    raise LLMError(f"Unsupported LLM provider: {provider}")
+
+
+def provider_has_credentials(provider: str, api_key: str | None = None) -> bool:
+    """Check whether the selected provider can make a real request."""
+
+    key, _ = resolve_provider_config(provider, api_key)
+    return bool(key)
 
 
 def build_prompt(*, source_code: str, ir: dict[str, Any], analysis: dict[str, Any], schema: str | None) -> str:
@@ -50,13 +80,32 @@ def _without_markdown_fences(value: str) -> str:
     return text
 
 
-async def generate(*, prompt: str) -> LLMResult:
-    # A credencial vem somente do ambiente e nunca entra no prompt, relatório
-    # ou metadados persistidos.
-    api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key:
-        raise LLMError("GEMINI_API_KEY is not configured")
-    model = os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite")
+async def generate(
+    *,
+    prompt: str,
+    provider: str = "gemini",
+    api_key: str | None = None,
+    model_name: str | None = None,
+) -> LLMResult:
+    # A chave explícita tem prioridade sobre o ambiente, mas nunca entra no
+    # prompt, relatório ou metadados persistidos.
+    resolved_key, model = resolve_provider_config(provider, api_key, model_name)
+    if not resolved_key:
+        env_name = {
+            "gemini": "GEMINI_API_KEY",
+            "openrouter": "OPENROUTER_API_KEY",
+            "openai": "OPENAI_API_KEY",
+        }[provider]
+        raise LLMError(f"{env_name} is not configured")
+
+    if provider in {"openai", "openrouter"}:
+        return await _generate_openai_compatible(
+            prompt=prompt,
+            provider=provider,
+            api_key=resolved_key,
+            model=model,
+        )
+
     timeout_ms = int(float(os.getenv("GEMINI_TIMEOUT_SECONDS", "60")) * 1000)
     http_client: httpx.Client | None = None
     client: genai.Client | None = None
@@ -93,10 +142,49 @@ async def generate(*, prompt: str) -> LLMResult:
     return LLMResult(
         code=code,
         metadata={
-            "provider": "gemini",
+            "provider": provider,
             "model": getattr(response, "model_version", None) or model,
             "prompt_version": PROMPT_VERSION,
             "response_id": getattr(response, "response_id", None),
+            "usage": usage.model_dump(exclude_none=True) if hasattr(usage, "model_dump") else None,
+        },
+    )
+
+
+async def _generate_openai_compatible(
+    *, prompt: str, provider: str, api_key: str, model: str
+) -> LLMResult:
+    """Call OpenAI or an OpenAI-compatible endpoint with one normalized output."""
+
+    base_url = "https://openrouter.ai/api/v1" if provider == "openrouter" else None
+    client = AsyncOpenAI(
+        api_key=api_key,
+        base_url=base_url,
+        timeout=float(os.getenv("LLM_TIMEOUT_SECONDS", "60")),
+    )
+    try:
+        response = await client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0,
+        )
+    except Exception as exc:
+        raise LLMError(f"{provider} request failed: {exc}") from exc
+    finally:
+        await client.close()
+
+    message = response.choices[0].message.content if response.choices else None
+    code = _without_markdown_fences(message or "")
+    if not code:
+        raise LLMError(f"{provider} returned an empty response")
+    usage = getattr(response, "usage", None)
+    return LLMResult(
+        code=code,
+        metadata={
+            "provider": provider,
+            "model": getattr(response, "model", None) or model,
+            "prompt_version": PROMPT_VERSION,
+            "response_id": getattr(response, "id", None),
             "usage": usage.model_dump(exclude_none=True) if hasattr(usage, "model_dump") else None,
         },
     )

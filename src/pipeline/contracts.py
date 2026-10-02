@@ -5,6 +5,7 @@ from typing import Literal, TypedDict
 ExecutionStatus = Literal["success", "failure", "partial", "pending"]
 StageStatus = Literal["not_started", "running", "success", "failure", "partial"]
 ParameterMode = Literal["IN", "OUT", "INOUT", "unknown"]
+ProviderName = Literal["gemini", "openrouter", "openai"]
 
 
 class InputContract(TypedDict):

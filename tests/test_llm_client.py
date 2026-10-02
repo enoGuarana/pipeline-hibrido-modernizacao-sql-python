@@ -62,3 +62,45 @@ async def test_generate_requires_gemini_key(monkeypatch):
 
     with pytest.raises(client.LLMError, match="GEMINI_API_KEY is not configured"):
         await client.generate(prompt="context")
+
+
+@pytest.mark.anyio
+async def test_generate_uses_openrouter_openai_compatible_client(monkeypatch):
+    response = SimpleNamespace(
+        id="openrouter-response",
+        model="meta-llama/llama-test",
+        choices=[SimpleNamespace(message=SimpleNamespace(content="```python\nreturn 1\n```"))],
+        usage=None,
+    )
+    calls = {}
+
+    class FakeCompletions:
+        async def create(self, **kwargs):
+            calls["request"] = kwargs
+            return response
+
+    class FakeOpenAI:
+        def __init__(self, **kwargs):
+            calls["client"] = kwargs
+            self.chat = SimpleNamespace(completions=FakeCompletions())
+
+        async def close(self):
+            calls["closed"] = True
+
+    monkeypatch.setattr(client, "AsyncOpenAI", FakeOpenAI)
+
+    result = await client.generate(
+        prompt="structured context",
+        provider="openrouter",
+        api_key="request-only",
+        model_name="meta-llama/llama-test",
+    )
+
+    assert result.code == "return 1"
+    assert result.metadata["provider"] == "openrouter"
+    assert result.metadata["model"] == "meta-llama/llama-test"
+    assert calls["client"]["api_key"] == "request-only"
+    assert calls["client"]["base_url"] == "https://openrouter.ai/api/v1"
+    assert calls["request"]["temperature"] == 0
+    assert calls["request"]["model"] == "meta-llama/llama-test"
+    assert calls["closed"] is True

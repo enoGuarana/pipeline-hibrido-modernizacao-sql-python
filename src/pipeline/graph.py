@@ -2,7 +2,6 @@
 
 import ast
 import hashlib
-import os
 import subprocess
 import sys
 from typing import Any
@@ -10,7 +9,13 @@ from typing import Any
 from langgraph.graph import END, START, StateGraph
 
 from .contracts import ExecutionError, StageReport
-from .llm.client import LLMError, build_prompt, generate
+from .llm.client import (
+    LLMError,
+    build_prompt,
+    generate,
+    provider_has_credentials,
+    resolve_provider_config,
+)
 from .observability import trace_node
 from .parsing import parse_routine
 from .state import PipelineState
@@ -141,7 +146,16 @@ async def generation_node(state: PipelineState) -> dict[str, Any]:
     stage = "generation"
     if state.get("status") == "failure":
         return _skipped(state, stage)
-    if os.getenv("GEMINI_API_KEY"):
+    provider = state.get("provider", "gemini")
+    api_key = state.get("api_key")
+    model_name = state.get("model_name")
+    try:
+        _, resolved_model = resolve_provider_config(provider, api_key, model_name)
+    except LLMError as exc:
+        error = _error("LLM_PROVIDER", str(exc), stage)
+        return _failed(state, _stage(stage, "failure", errors=[error]), error)
+
+    if provider_has_credentials(provider, api_key):
         try:
             result = await generate(
                 prompt=build_prompt(
@@ -149,7 +163,10 @@ async def generation_node(state: PipelineState) -> dict[str, Any]:
                     ir=dict(state.get("ir", {})),
                     analysis=state.get("analysis", {}),
                     schema=state.get("schema"),
-                )
+                ),
+                provider=provider,
+                api_key=api_key,
+                model_name=model_name,
             )
         except LLMError as exc:
             error = _error("LLM_GENERATION", str(exc), stage)
@@ -160,7 +177,7 @@ async def generation_node(state: PipelineState) -> dict[str, Any]:
             "generation_attempts": 1,
             "stage_reports": _with_stage(
                 state,
-                _stage(stage, "success", decisions=["Use Gemini API with versioned context"]),
+                _stage(stage, "success", decisions=[f"Use {provider} API with versioned context"]),
             ),
             "status": state.get("status", "pending"),
         }
@@ -173,6 +190,8 @@ async def generation_node(state: PipelineState) -> dict[str, Any]:
         "generated_code": generated_code,
         "generation_metadata": {
             "provider": "simulated",
+            "requested_provider": provider,
+            "requested_model": resolved_model,
             "model": None,
             "prompt_version": None,
             "response_id": None,
@@ -243,7 +262,12 @@ def _route_after_validation(state: PipelineState) -> str:
     if any(error.get("code", "").startswith("LLM_") for error in errors):
         return "finalization"
     validation_error = any(error.get("code", "").startswith("VALIDATION_") for error in errors)
-    if validation_error and os.getenv("GEMINI_API_KEY") and state.get("generation_attempts", 1) < 2:
+    provider = state.get("provider", "gemini")
+    if (
+        validation_error
+        and provider_has_credentials(provider, state.get("api_key"))
+        and state.get("generation_attempts", 1) < 2
+    ):
         return "repair"
     return "finalization"
 
@@ -267,7 +291,12 @@ async def repair_node(state: PipelineState) -> dict[str, Any]:
         schema=state.get("schema"),
     )
     try:
-        result = await generate(prompt=repair_prompt)
+        result = await generate(
+            prompt=repair_prompt,
+            provider=state.get("provider", "gemini"),
+            api_key=state.get("api_key"),
+            model_name=state.get("model_name"),
+        )
     except LLMError as exc:
         error = _error("LLM_REPAIR", str(exc), stage)
         return _failed(state, _stage(stage, "failure", errors=[error]), error)

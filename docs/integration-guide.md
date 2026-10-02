@@ -16,8 +16,20 @@ banco. A persistência usa `DATABASE_URL` e `modernization_history`.
 
 ## LLM
 
-Defina `GEMINI_API_KEY` e opcionalmente `GEMINI_MODEL`. Nunca envie a chave no
-JSON, não a registre em logs e não a versione.
+O padrão é Gemini. Também são aceitos `openrouter` e `openai`:
+
+```json
+{
+  "source_code": "CREATE FUNCTION ...",
+  "provider": "openrouter",
+  "api_key": "chave-da-execucao",
+  "model_name": "meta-llama/llama-3-8b-instruct"
+}
+```
+
+Se `api_key` não for enviada, use `GEMINI_API_KEY`/`GOOGLE_API_KEY`,
+`OPENROUTER_API_KEY` ou `OPENAI_API_KEY`, conforme o provedor. Nunca registre
+chaves em logs, JSON persistido ou controle de versão.
 
 ## Resultados
 
