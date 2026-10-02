@@ -6,7 +6,7 @@
 - Nenhum código gerado é executado pela API.
 - `ast.parse` e linting demonstram validade estática, não equivalência comportamental.
 - A recuperação de uma queda de processo entre o registro `pending` e a finalização ainda não foi implementada.
-- O endpoint `/evaluation` e o comparador comportamental estão implementados, mas não existem ainda resultados de equivalência B–F.
+- O endpoint `/evaluation` e o comparador comportamental estão implementados; há resultados equivalentes para os três cenários B/C registrados, mas D–F continuam sem execução comportamental.
 - `scripts/evaluate_results.py` reproduz as métricas sobre artefatos exportados; ele não executa código gerado e não substitui o comparativo no PostgreSQL.
 - A execução B–F depende de rotinas legadas instaladas no banco isolado, cenários aprovados e uma saída real para comparação.
 - O `gemini-3.8-flash` apresentou indisponibilidade recorrente. O padrão foi

@@ -80,13 +80,26 @@ o cenário os declara por caminho explícito; diferenças não declaradas contin
 causando reprovação. O comparador não executa código gerado e não cria
 observações fictícias.
 
+O harness `scripts/run_behavioral_bc.py` executa os artefatos reais de B e C em
+um schema temporário do PostgreSQL:
+
+```powershell
+.venv\Scripts\python.exe scripts\run_behavioral_bc.py `
+  --database-url "postgresql://postgres:postgres@localhost:55432/modernization"
+```
+
+O relatório versionado em `results/behavioral-bc.json` registra três cenários:
+saldo de B, inativação de C e parâmetro inválido de C. Os três foram
+equivalentes na execução de 2026-10-02. O caso inválido compara a categoria
+semântica `invalid_parameter`; não afirma identidade entre a classe de exceção
+do PostgreSQL e a exceção Python.
+
 - A tentativa histórica com OpenAI registrada terminou com erro de
   quota (`429`); ela não é contada como geração real bem-sucedida.
 - As execuções simuladas servem para verificar o fluxo e a persistência, não
   para reivindicar qualidade de tradução.
-- Ainda não há harness de equivalência comportamental B–F em banco isolado;
-  `behavioral_equivalence_tested` permanece zero até que esses cenários sejam
-  realmente executados.
+- Há harness e evidência para B e C em banco isolado; D–F ainda não foram
+  executados e continuam fora da alegação de equivalência.
 - A execução comportamental B–F permanece bloqueada por falta de rotinas
   legadas instaladas e fixtures de estado/entrada aprovadas. A disponibilidade
   de geração real foi demonstrada para B, mas C–F ainda não foram gerados.

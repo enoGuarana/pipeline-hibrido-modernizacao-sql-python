@@ -33,3 +33,7 @@ Artefatos atuais:
   falhos por validação estática. A revisão está em `semantic-review.md`.
 
 Nenhum desses bundles comprova equivalência comportamental.
+
+`behavioral-bc.json` é uma exceção delimitada: registra a comparação
+comportamental executada em schema PostgreSQL temporário para três cenários de
+B/C. Ele não estende essa evidência para D–F.
