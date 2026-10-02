@@ -1,0 +1,144 @@
+{
+  "errors": [
+    {
+      "code": "VALIDATION_LINT",
+      "stage": "validation",
+      "message": "I001 [*] Import block is un-sorted or un-formatted\n --> generated.py:1:1\n  |\n1 | / from datetime import date, datetime\n2 | | from decimal import Decimal\n3 | | import sys\n4 | |\n5 | | import psycopg\n6 | | from psycopg import OperationalError, ProgrammingError\n  | |______________________________________________________^\nhelp: Organize imports\n  |\n1 + import sys\n2 | from datetime import date, datetime\n3 | from decimal import Decimal\n  - import sys\n4 |\n  |\n\nFound 1 error.\n[*] 1 fixable with the `--fix` option.\n",
+      "recoverable": false
+    }
+  ],
+  "stages": [
+    {
+      "stage": "parsing",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "routine_wrapper",
+        "dollar_quoted_body",
+        "parameters",
+        "variables",
+        "operations",
+        "tables"
+      ],
+      "warnings": [
+        "body parsing is structural classification, not a complete PL/pgSQL AST"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "semantic_analysis",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "routine=sp_relatorio_mensal_cliente",
+        "parameters=3",
+        "variables=1",
+        "operation=select",
+        "operation=cte_recursive",
+        "operation=exception",
+        "operation=raise",
+        "operation=function_call",
+        "table=contas",
+        "table=meses",
+        "table=movimento",
+        "table=transacoes"
+      ],
+      "warnings": [],
+      "decisions": [
+        "Preserve NUMERIC semantics and distinguish facts from inferences"
+      ],
+      "duration_ms": null
+    },
+    {
+      "stage": "generation",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [],
+      "decisions": [
+        "Use Gemini API with versioned context"
+      ],
+      "duration_ms": null
+    },
+    {
+      "stage": "validation",
+      "errors": [
+        {
+          "code": "VALIDATION_LINT",
+          "stage": "validation",
+          "message": "I001 [*] Import block is un-sorted or un-formatted\n --> generated.py:1:1\n  |\n1 | / from datetime import date, datetime, timedelta\n2 | | from decimal import Decimal\n3 | | import sys\n4 | |\n5 | | import psycopg\n6 | | from psycopg import OperationalError, ProgrammingError\n  | |______________________________________________________^\nhelp: Organize imports\n  |\n1 + import sys\n2 | from datetime import date, datetime, timedelta\n3 | from decimal import Decimal\n  - import sys\n4 |\n  |\n\nF401 [*] `datetime.timedelta` imported but unused\n --> generated.py:1:38\n  |\n1 | from datetime import date, datetime, timedelta\n  |                                      ^^^^^^^^^\n2 | from decimal import Decimal\n3 | import sys\n  |\nhelp: Remove unused import: `datetime.timedelta`\n  |\n  - from datetime import date, datetime, timedelta\n1 + from datetime import date, datetime\n2 | from decimal import Decimal\n  |\n\nFound 2 errors.\n[*] 2 fixable with the `--fix` option.\n",
+          "recoverable": false
+        }
+      ],
+      "status": "failure",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "repair",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [
+        "previous generated code and validation report were preserved"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "validation",
+      "errors": [
+        {
+          "code": "VALIDATION_LINT",
+          "stage": "validation",
+          "message": "I001 [*] Import block is un-sorted or un-formatted\n --> generated.py:1:1\n  |\n1 | / from datetime import date, datetime\n2 | | from decimal import Decimal\n3 | | import sys\n4 | |\n5 | | import psycopg\n6 | | from psycopg import OperationalError, ProgrammingError\n  | |______________________________________________________^\nhelp: Organize imports\n  |\n1 + import sys\n2 | from datetime import date, datetime\n3 | from decimal import Decimal\n  - import sys\n4 |\n  |\n\nFound 1 error.\n[*] 1 fixable with the `--fix` option.\n",
+          "recoverable": false
+        }
+      ],
+      "status": "failure",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "finalization",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    }
+  ],
+  "equivalence": "not_tested",
+  "traceability": {
+    "run_id": 26,
+    "schema_sha256": "e89b98c1501d8b0f2ee0301a8c74fd9275e9da45c8f0907dd3a0ec7b40fbd5a5",
+    "source_sha256": "d216a5efc688b5d8a46e318ef696eade67ac2085928c929af1cf2f44509cb0d1",
+    "generation_attempts": 2,
+    "generated_code_sha256": "d8b02c5c88fd04dadb161361840db6a40d699c395eee4c5675a078490ce2ce66"
+  },
+  "generation_mode": "gemini",
+  "generation_metadata": {
+    "model": "gemini-3.5-flash-lite",
+    "usage": {
+      "total_token_count": 5055,
+      "prompt_token_count": 3849,
+      "prompt_tokens_details": [
+        {
+          "modality": "TEXT",
+          "token_count": 3849
+        }
+      ],
+      "candidates_token_count": 1206
+    },
+    "provider": "gemini",
+    "repaired": true,
+    "response_id": "szS_au2jFfidz7IPjLKT6AI",
+    "prompt_version": "modernize_v4"
+  }
+}

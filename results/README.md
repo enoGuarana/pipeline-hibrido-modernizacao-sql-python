@@ -27,5 +27,9 @@ Artefatos atuais:
 - `run-11`: geração real com falha Ruff e reparo indisponível;
 - `run-17`: geração e reparo reais, com falha Ruff final de ordenação de imports;
 - `run-18`: geração real aprovada em `ast.parse` e Ruff na primeira tentativa.
+- `run-19` a `run-22`: primeira rodada real C–F, com C/E aprovados estaticamente
+  após reparo e D/F falhos.
+- `run-23` a `run-26`: rodada com `modernize_v4`; C aprovado após reparo e D/E/F
+  falhos por validação estática. A revisão está em `semantic-review.md`.
 
 Nenhum desses bundles comprova equivalência comportamental.

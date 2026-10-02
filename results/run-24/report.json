@@ -1,0 +1,146 @@
+{
+  "errors": [
+    {
+      "code": "VALIDATION_LINT",
+      "stage": "validation",
+      "message": "I001 [*] Import block is un-sorted or un-formatted\n --> generated.py:1:1\n  |\n1 | / from decimal import ROUND_DOWN, Decimal\n2 | |\n3 | | from psycopg import AsyncConnection, Error as PsycopgError\n4 | | from psycopg.types.json import Jsonb\n  | |____________________________________^\nhelp: Organize imports\n  |\n2 |\n  - from psycopg import AsyncConnection, Error as PsycopgError\n3 + from psycopg import AsyncConnection\n4 + from psycopg import Error as PsycopgError\n5 | from psycopg.types.json import Jsonb\n  |\n\nFound 1 error.\n[*] 1 fixable with the `--fix` option.\n",
+      "recoverable": false
+    }
+  ],
+  "stages": [
+    {
+      "stage": "parsing",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "routine_wrapper",
+        "dollar_quoted_body",
+        "parameters",
+        "variables",
+        "operations",
+        "tables"
+      ],
+      "warnings": [
+        "body parsing is structural classification, not a complete PL/pgSQL AST"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "semantic_analysis",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "routine=sp_transferir_entre_contas",
+        "parameters=3",
+        "variables=3",
+        "operation=select",
+        "operation=insert",
+        "operation=update",
+        "operation=exception",
+        "operation=raise",
+        "operation=locking",
+        "operation=jsonb",
+        "operation=function_call",
+        "table=contas",
+        "table=log_auditoria",
+        "table=transacoes"
+      ],
+      "warnings": [],
+      "decisions": [
+        "Preserve NUMERIC semantics and distinguish facts from inferences"
+      ],
+      "duration_ms": null
+    },
+    {
+      "stage": "generation",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [],
+      "decisions": [
+        "Use Gemini API with versioned context"
+      ],
+      "duration_ms": null
+    },
+    {
+      "stage": "validation",
+      "errors": [
+        {
+          "code": "VALIDATION_LINT",
+          "stage": "validation",
+          "message": "I001 [*] Import block is un-sorted or un-formatted\n --> generated.py:1:1\n  |\n1 | / from decimal import Decimal, ROUND_DOWN\n2 | | from psycopg import AsyncConnection, Error as PsycopgError\n3 | | from psycopg.types.json import Jsonb\n  | |____________________________________^\nhelp: Organize imports\n  |\n  - from decimal import Decimal, ROUND_DOWN\n  - from psycopg import AsyncConnection, Error as PsycopgError\n1 + from decimal import ROUND_DOWN, Decimal\n2 +\n3 + from psycopg import AsyncConnection\n4 + from psycopg import Error as PsycopgError\n5 | from psycopg.types.json import Jsonb\n  |\n\nPYI041 [*] Use `float` instead of `int | float`\n --> generated.py:6:30\n  |\n6 | def _quantize_numeric(value: Decimal | int | float | str | None) -> Decimal | None:\n  |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n7 |     if value is None:\n8 |         return None\n  |\nhelp: Remove redundant type\n  |\n5 |\n  - def _quantize_numeric(value: Decimal | int | float | str | None) -> Decimal | None:\n6 + def _quantize_numeric(value: Decimal | float | str | None) -> Decimal | None:\n7 |     if value is None:\n  |\n\nPYI041 [*] Use `float` instead of `int | float`\n  --> generated.py:16:14\n   |\n14 |     p_conta_origem: int,\n15 |     p_conta_destino: int,\n16 |     p_valor: Decimal | int | float | str,\n   |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n17 | ) -> None:\n18 |     p_valor_q = _quantize_numeric(p_valor)\n   |\nhelp: Remove redundant type\n   |\n15 |     p_conta_destino: int,\n   -     p_valor: Decimal | int | float | str,\n16 +     p_valor: Decimal | float | str,\n17 | ) -> None:\n   |\n\nFound 3 errors.\n[*] 3 fixable with the `--fix` option.\n",
+          "recoverable": false
+        }
+      ],
+      "status": "failure",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "repair",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [
+        "previous generated code and validation report were preserved"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "validation",
+      "errors": [
+        {
+          "code": "VALIDATION_LINT",
+          "stage": "validation",
+          "message": "I001 [*] Import block is un-sorted or un-formatted\n --> generated.py:1:1\n  |\n1 | / from decimal import ROUND_DOWN, Decimal\n2 | |\n3 | | from psycopg import AsyncConnection, Error as PsycopgError\n4 | | from psycopg.types.json import Jsonb\n  | |____________________________________^\nhelp: Organize imports\n  |\n2 |\n  - from psycopg import AsyncConnection, Error as PsycopgError\n3 + from psycopg import AsyncConnection\n4 + from psycopg import Error as PsycopgError\n5 | from psycopg.types.json import Jsonb\n  |\n\nFound 1 error.\n[*] 1 fixable with the `--fix` option.\n",
+          "recoverable": false
+        }
+      ],
+      "status": "failure",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "finalization",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    }
+  ],
+  "equivalence": "not_tested",
+  "traceability": {
+    "run_id": 24,
+    "schema_sha256": "e89b98c1501d8b0f2ee0301a8c74fd9275e9da45c8f0907dd3a0ec7b40fbd5a5",
+    "source_sha256": "754f977bccf94333360432802cdbf3216d7c6ea7717ae03e879274fdb60483d5",
+    "generation_attempts": 2,
+    "generated_code_sha256": "7c5b39dec86068e06b64ac9c46fdd5e123b59267d0573e0dc3adfb5ad8014d84"
+  },
+  "generation_mode": "gemini",
+  "generation_metadata": {
+    "model": "gemini-3.5-flash-lite",
+    "usage": {
+      "total_token_count": 4957,
+      "prompt_token_count": 3938,
+      "prompt_tokens_details": [
+        {
+          "modality": "TEXT",
+          "token_count": 3938
+        }
+      ],
+      "candidates_token_count": 1019
+    },
+    "provider": "gemini",
+    "repaired": true,
+    "response_id": "ozS_au7oN-ucz7IPueyrwQk",
+    "prompt_version": "modernize_v4"
+  }
+}

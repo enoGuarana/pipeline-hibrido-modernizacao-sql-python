@@ -1,0 +1,146 @@
+{
+  "errors": [
+    {
+      "code": "VALIDATION_LINT",
+      "stage": "validation",
+      "message": "I001 [*] Import block is un-sorted or un-formatted\n --> generated.py:1:1\n  |\n1 | / from decimal import Decimal\n2 | | import json\n3 | |\n4 | | import psycopg\n  | |______________^\nhelp: Organize imports\n  |\n1 + import json\n2 | from decimal import Decimal\n  - import json\n3 |\n  |\n\nFound 1 error.\n[*] 1 fixable with the `--fix` option.\n",
+      "recoverable": false
+    }
+  ],
+  "stages": [
+    {
+      "stage": "parsing",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "routine_wrapper",
+        "dollar_quoted_body",
+        "parameters",
+        "variables",
+        "operations",
+        "tables"
+      ],
+      "warnings": [
+        "body parsing is structural classification, not a complete PL/pgSQL AST"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "semantic_analysis",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "routine=sp_transferir_entre_contas",
+        "parameters=3",
+        "variables=3",
+        "operation=select",
+        "operation=insert",
+        "operation=update",
+        "operation=exception",
+        "operation=raise",
+        "operation=locking",
+        "operation=jsonb",
+        "operation=function_call",
+        "table=contas",
+        "table=log_auditoria",
+        "table=transacoes"
+      ],
+      "warnings": [],
+      "decisions": [
+        "Preserve NUMERIC semantics and distinguish facts from inferences"
+      ],
+      "duration_ms": null
+    },
+    {
+      "stage": "generation",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [],
+      "decisions": [
+        "Use Gemini API with versioned context"
+      ],
+      "duration_ms": null
+    },
+    {
+      "stage": "validation",
+      "errors": [
+        {
+          "code": "VALIDATION_LINT",
+          "stage": "validation",
+          "message": "I001 [*] Import block is un-sorted or un-formatted\n --> generated.py:1:1\n  |\n1 | / import json\n2 | | from decimal import Decimal\n3 | | import psycopg\n  | |______________^\nhelp: Organize imports\n  |\n2 | from decimal import Decimal\n3 +\n4 | import psycopg\n  |\n\nFound 1 error.\n[*] 1 fixable with the `--fix` option.\n",
+          "recoverable": false
+        }
+      ],
+      "status": "failure",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "repair",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [
+        "previous generated code and validation report were preserved"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "validation",
+      "errors": [
+        {
+          "code": "VALIDATION_LINT",
+          "stage": "validation",
+          "message": "I001 [*] Import block is un-sorted or un-formatted\n --> generated.py:1:1\n  |\n1 | / from decimal import Decimal\n2 | | import json\n3 | |\n4 | | import psycopg\n  | |______________^\nhelp: Organize imports\n  |\n1 + import json\n2 | from decimal import Decimal\n  - import json\n3 |\n  |\n\nFound 1 error.\n[*] 1 fixable with the `--fix` option.\n",
+          "recoverable": false
+        }
+      ],
+      "status": "failure",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "finalization",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    }
+  ],
+  "equivalence": "not_tested",
+  "traceability": {
+    "run_id": 20,
+    "schema_sha256": "e89b98c1501d8b0f2ee0301a8c74fd9275e9da45c8f0907dd3a0ec7b40fbd5a5",
+    "source_sha256": "754f977bccf94333360432802cdbf3216d7c6ea7717ae03e879274fdb60483d5",
+    "generation_attempts": 2,
+    "generated_code_sha256": "4a39491308134ad7ce214bba23d26f76a1ecf3341a1ccdd28d14ef859f90b594"
+  },
+  "generation_mode": "gemini",
+  "generation_metadata": {
+    "model": "gemini-3.5-flash-lite",
+    "usage": {
+      "total_token_count": 3875,
+      "prompt_token_count": 3058,
+      "prompt_tokens_details": [
+        {
+          "modality": "TEXT",
+          "token_count": 3058
+        }
+      ],
+      "candidates_token_count": 817
+    },
+    "provider": "gemini",
+    "repaired": true,
+    "response_id": "JzS_arC5GLfoz7IPm_qxmA0",
+    "prompt_version": "modernize_v3"
+  }
+}

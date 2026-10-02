@@ -31,7 +31,7 @@ não são aceites por sua simples presença no documento.
 | O9 | PostgreSQL e `modernization_history` | Script/migração e repositório de persistência | Banco iniciado, schema inspecionado e integração funcional |
 | O10 | Persistir toda execução | Criar registro antes do processamento e atualizar sucesso/falha/parcial | `run_id=18` persistiu sucesso e `run_id=17` persistiu falha controlada com JSONB; desfecho parcial ainda requer evidência específica |
 | O11 | Modularização e evolução | Separar API, grafo, nós, persistência e integrações | Inspeção estrutural e testes das fronteiras |
-| O12 | Procedures B–F e resultados reais | Fixtures do schema A e rotinas B–F; artefatos associados às entradas | Resultado real B em `results/run-18`; schema A e resultados reais C–F ainda pendentes |
+| O12 | Procedures B–F e resultados reais | Fixtures do schema A e rotinas B–F; artefatos associados às entradas | Fixtures A–F e artefatos reais `run-18` e `run-19–26`; D–F têm falhas/limitações documentadas e ainda não demonstram equivalência |
 | O13 | Docker Compose e README completo | Compose para servidor/PostgreSQL; fluxo, testes, diagrama, decisões, trade-offs e limitações | Reprodução em checkout limpo |
 
 ## Bônus
@@ -98,7 +98,15 @@ O `run_id=18` fornece evidência real para O2, O7 e O8 no Anexo B: a chamada
 `POST /modernize`, servida pelo LangGraph CLI, usou `gemini-3.5-flash-lite` e
 `modernize_v3`, persistiu código/relatório e passou em `ast.parse` e Ruff na
 primeira tentativa. A evidência está em `results/run-18` e não autoriza alegar
-equivalência. O12 permanece pendente porque faltam resultados reais C–F.
+equivalência. O12 agora tem execução real B–F, mas permanece parcial quanto a
+aceite estático/semântico e equivalência.
+
+O schema A foi extraído fielmente para `fixtures/A.sql`. As rodadas reais
+`run_id=19–26` cobriram C–F com schema no contexto e estão preservadas em
+`results/`; a revisão em `results/semantic-review.md` separa comportamento
+plausível, divergência observada e comportamento ainda não testado. O12 tem
+evidência de execução dos cinco casos, mas permanece parcial quanto a aceite
+semântico e equivalência.
 
 ## Pendências objetivas após as decisões validadas
 

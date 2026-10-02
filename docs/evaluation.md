@@ -54,6 +54,13 @@ quatro gerações simuladas, três gerações reais com código e zero equivalê
 comportamentais testadas. Há dez erros de geração, dois de validação e um de
 reparo; erros distintos da mesma execução são contados em seus estágios.
 
+Após as rodadas reais C–F (`run_id=19–26`), a consulta local passou a registrar
+25 execuções terminais, 2 aprovações na primeira tentativa, 3 aprovações após
+reparo, 4 gerações simuladas, 11 gerações reais com código e zero equivalências.
+Os erros agrupados foram: 10 de geração, 7 de validação e 1 de reparo. D–F
+possuem artefatos reais, mas a aprovação estática ou a revisão semântica não
+autoriza alegar equivalência.
+
 O núcleo do comparador comportamental foi implementado em
 `pipeline.behavioral_evaluation`. Ele compara retorno, estado das tabelas e
 erro observado. IDs, timestamps ou outros valores só são normalizados quando

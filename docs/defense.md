@@ -22,12 +22,16 @@ A API registra a execução antes do processamento e executa um grafo LangGraph 
   Isso comprova integração e validade estática, não equivalência.
 - Não há equivalência comportamental publicada para B–F.
 - O parser não é AST completa de PL/pgSQL.
-- Evaluation e observabilidade externa ainda são bônus futuros.
+- D e F ainda têm falhas de validação estática nos artefatos mais recentes; E
+  possui limitações semânticas não testadas.
+- Evaluation reproduzível está disponível no endpoint, mas Langfuse e
+  equivalência comportamental continuam bônus/pendências.
 
 ## Evolução para produção
 
 1. Atualizar e validar uma combinação suportada do runtime LangGraph.
-2. Executar e revisar gerações reais de C–F, registrando uso disponível.
+2. Corrigir as falhas estáticas D/F e implementar a dependência Python injetada
+   de F conforme ADR-013.
 3. Completar o harness comportamental isolado para B–F.
 4. Implementar evaluation e observabilidade com evidência real.
 5. Tratar recuperação de crashes e operação segura de credenciais.

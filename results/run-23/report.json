@@ -1,0 +1,136 @@
+{
+  "errors": [],
+  "stages": [
+    {
+      "stage": "parsing",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "routine_wrapper",
+        "dollar_quoted_body",
+        "parameters",
+        "variables",
+        "operations",
+        "tables"
+      ],
+      "warnings": [
+        "body parsing is structural classification, not a complete PL/pgSQL AST"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "semantic_analysis",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "routine=sp_atualizar_status_contas_inativas",
+        "parameters=2",
+        "variables=0",
+        "operation=select",
+        "operation=insert",
+        "operation=update",
+        "operation=exception",
+        "operation=raise",
+        "operation=jsonb",
+        "operation=function_call",
+        "table=contas",
+        "table=log_auditoria",
+        "table=transacoes"
+      ],
+      "warnings": [],
+      "decisions": [
+        "Preserve NUMERIC semantics and distinguish facts from inferences"
+      ],
+      "duration_ms": null
+    },
+    {
+      "stage": "generation",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [],
+      "decisions": [
+        "Use Gemini API with versioned context"
+      ],
+      "duration_ms": null
+    },
+    {
+      "stage": "validation",
+      "errors": [
+        {
+          "code": "VALIDATION_LINT",
+          "stage": "validation",
+          "message": "I001 [*] Import block is un-sorted or un-formatted\n --> generated.py:1:1\n  |\n1 | / import json\n2 | | from psycopg import AsyncConnection\n3 | | from psycopg.types.json import Jsonb\n  | |____________________________________^\nhelp: Organize imports\n  |\n1 | import json\n2 +\n3 | from psycopg import AsyncConnection\n  |\n\nF401 [*] `json` imported but unused\n --> generated.py:1:8\n  |\n1 | import json\n  |        ^^^^\n2 | from psycopg import AsyncConnection\n3 | from psycopg.types.json import Jsonb\n  |\nhelp: Remove unused import: `json`\n  |\n  - import json\n1 | from psycopg import AsyncConnection\n  |\n\nFound 2 errors.\n[*] 2 fixable with the `--fix` option.\n",
+          "recoverable": false
+        }
+      ],
+      "status": "failure",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "repair",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [
+        "previous generated code and validation report were preserved"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "validation",
+      "errors": [],
+      "status": "success",
+      "findings": [
+        "ast_parse=passed",
+        "lint=passed"
+      ],
+      "warnings": [
+        "static validation does not establish equivalence"
+      ],
+      "decisions": [],
+      "duration_ms": null
+    },
+    {
+      "stage": "finalization",
+      "errors": [],
+      "status": "success",
+      "findings": [],
+      "warnings": [],
+      "decisions": [],
+      "duration_ms": null
+    }
+  ],
+  "equivalence": "not_tested",
+  "traceability": {
+    "run_id": 23,
+    "schema_sha256": "e89b98c1501d8b0f2ee0301a8c74fd9275e9da45c8f0907dd3a0ec7b40fbd5a5",
+    "source_sha256": "a835dc99f09638c357605548741c400637390766f1ba3b12f5dc510c402e6568",
+    "generation_attempts": 2,
+    "generated_code_sha256": "9e657799729054ad2c088fba886f678517b6582c0221a1e1bc4f07a16b174901"
+  },
+  "generation_mode": "gemini",
+  "generation_metadata": {
+    "model": "gemini-3.5-flash-lite",
+    "usage": {
+      "total_token_count": 2749,
+      "prompt_token_count": 2418,
+      "prompt_tokens_details": [
+        {
+          "modality": "TEXT",
+          "token_count": 2418
+        }
+      ],
+      "candidates_token_count": 331
+    },
+    "provider": "gemini",
+    "repaired": true,
+    "response_id": "njS_apz9Gt3pz7IPidmIkQk",
+    "prompt_version": "modernize_v4"
+  }
+}

@@ -45,7 +45,7 @@ async def test_generate_uses_gemini_and_records_available_metadata(monkeypatch):
     assert result.metadata == {
         "provider": "gemini",
         "model": "gemini-test",
-        "prompt_version": "modernize_v3",
+        "prompt_version": "modernize_v4",
         "response_id": "response-1",
         "usage": {"prompt_token_count": 10, "candidates_token_count": 5},
     }

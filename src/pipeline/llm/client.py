@@ -14,8 +14,8 @@ import truststore
 from google import genai
 from google.genai import types
 
-PROMPT_VERSION = "modernize_v3"
-PROMPT_PATH = Path(__file__).parent / "prompts" / "modernize_v3.txt"
+PROMPT_VERSION = "modernize_v4"
+PROMPT_PATH = Path(__file__).parent / "prompts" / "modernize_v4.txt"
 
 
 class LLMError(RuntimeError):

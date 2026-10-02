@@ -13,3 +13,8 @@
   verificação no catálogo oficial.
 - O `run_id=18` do Anexo B passou em `ast.parse` e Ruff com geração real, mas
   ainda não foi executado nem comparado comportamentalmente com a função original.
+- C e E tiveram saídas estaticamente aprovadas após reparo; D e F continuam
+  falhando no Ruff nos artefatos mais recentes. A revisão semântica está em
+  `results/semantic-review.md`.
+- F ainda chama B legado por SQL na saída `run-26`; a dependência Python injetada
+  foi aceita como direção no ADR-013, mas ainda não foi implementada no artefato.

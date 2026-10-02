@@ -1,0 +1,30 @@
+{
+  "run_id": 26,
+  "status": "failure",
+  "created_at": "2026-10-02 04:35:59.207578+00:00",
+  "source_sha256": "d216a5efc688b5d8a46e318ef696eade67ac2085928c929af1cf2f44509cb0d1",
+  "generated_code_sha256": "d8b02c5c88fd04dadb161361840db6a40d699c395eee4c5675a078490ce2ce66",
+  "generation_metadata": {
+    "model": "gemini-3.5-flash-lite",
+    "usage": {
+      "total_token_count": 5055,
+      "prompt_token_count": 3849,
+      "prompt_tokens_details": [
+        {
+          "modality": "TEXT",
+          "token_count": 3849
+        }
+      ],
+      "candidates_token_count": 1206
+    },
+    "provider": "gemini",
+    "repaired": true,
+    "response_id": "szS_au2jFfidz7IPjLKT6AI",
+    "prompt_version": "modernize_v4"
+  },
+  "equivalence": "not_tested",
+  "limitations": [
+    "Static validation does not establish behavioral equivalence.",
+    "The generated module was stored for review and was not executed by the API."
+  ]
+}

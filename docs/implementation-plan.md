@@ -163,3 +163,16 @@ Uma chamada real do Anexo B alcançou a Responses API, mas terminou controladame
 - `truststore` foi adotado para preservar a verificação TLS usando o armazenamento nativo do Windows; `verify=False` foi rejeitado.
 - O ADR-012 substitui o ADR-009 para novas gerações sem apagar a tentativa OpenAI anterior.
 - A interface interna do grafo permanece estável e os metadados disponíveis do Gemini continuam rastreáveis.
+
+## Revisão da etapa 9 — execução real C–F
+
+O schema A foi extraído para `fixtures/A.sql` com comparação textual ao bloco
+de `DESAFIO_CONTEXTO.md`. Os `run_id=19–22` executaram C–F com
+`modernize_v3`; C e E passaram estaticamente após reparo, enquanto D e F
+falharam. Os `run_id=23–26` repetiram C–F com `modernize_v4`; C passou após
+reparo e D, E e F falharam por Ruff. Todos os artefatos foram exportados.
+
+A revisão crítica encontrou divergências semânticas nos códigos gerados,
+incluindo arredondamento/NULL em E, dependência legada e filtro de contas em F,
+e comportamento de auditoria/rollback em D. Elas estão classificadas em
+`results/semantic-review.md`; não foram corrigidas silenciosamente.
