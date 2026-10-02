@@ -21,6 +21,26 @@ O estado compartilhado é `PipelineState`, um `TypedDict`. Os nós estão regist
 - [Requisitos e critérios de aceite](docs/requirements.md)
 - [Plano de implementação](docs/implementation-plan.md)
 - [ADRs](docs/adr/ADR-001-arquitetura-inicial.md)
+
+## Estado atual e evidências
+
+- Geração real Gemini registrada nos artefatos `results/run-18` e `results/run-19`–`run-26`.
+- Avaliação reproduzível disponível em `scripts/evaluate_results.py`.
+- Comparação comportamental isolada B/C disponível em `scripts/run_behavioral_bc.py`.
+- O relatório `results/behavioral-bc.json` registra 3 de 3 cenários equivalentes,
+  incluindo retorno, estado das tabelas, auditoria e erro semântico.
+- D–F ainda não possuem equivalência comportamental publicada; Langfuse ainda
+  não foi integrado.
+
+Para reproduzir a comparação B/C com o PostgreSQL do Compose:
+
+```powershell
+.venv\Scripts\python.exe scripts\run_behavioral_bc.py `
+  --database-url "postgresql://postgres:postgres@localhost:55432/modernization"
+```
+
+O schema usado pelo harness é temporário e removido ao final. A validade
+estática (`ast.parse` e Ruff) não é tratada como equivalência comportamental.
 - [Instruções para agentes](AGENTS.md)
 
 ## Execução prevista
