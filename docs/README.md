@@ -11,7 +11,7 @@ Documentos curtos para entendimento, construção, validação e operação.
 | Qualidade | [Plano de Testes](qa-plan.md) |
 | Operação | [Runbook](runbook.md) |
 | Uso e integração | [Guia de Usuário](user-guide.md) · [Guia de Integração](integration-guide.md) |
-| Entrega | [Relatório Técnico](relatorio-tecnico.md) · [PDF Gerado](RELATORIO_TECNICO_PROJETO.pdf) |
+| Entrega | [Relatório Técnico](relatorio-tecnico.md) · [PDF do Relatório](../RELATORIO_TECNICO_PROJETO.pdf) |
 
 O estado de aceite continua na [matriz de requisitos](requirements.md).
 O mapa de fontes de verdade e o estado da documentação estão em
