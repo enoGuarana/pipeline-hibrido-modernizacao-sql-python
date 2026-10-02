@@ -17,6 +17,55 @@ O pipeline preserva o SQL original, produz uma representação intermediária,
 identifica riscos, usa contexto estruturado no modelo e valida a saída com
 `ast.parse` e Ruff. O código gerado não é executado pela API.
 
+## Desenho do grafo
+
+```text
+                 ┌─────────────────────┐
+                 │  iniciar execução   │
+                 │ persistir pending   │
+                 └──────────┬──────────┘
+                            ▼
+                    ┌───────────────┐
+                    │    parsing    │
+                    └───────┬───────┘
+                            │ sucesso
+                            ▼
+                    ┌───────────────┐
+                    │ análise       │
+                    │ semântica     │
+                    └───────┬───────┘
+                            │ sucesso
+                            ▼
+                    ┌───────────────┐
+                    │ geração       │◄──────────────┐
+                    │ Gemini/stub   │               │
+                    └───────┬───────┘               │
+                            ▼                        │
+                    ┌───────────────┐                │
+                    │ validação     │                │
+                    │ AST + Ruff    │                │
+                    └───┬───────┬───┘                │
+                        │       │                    │
+             aprovado ──┘       └── inválido ──► reparo
+                        │                            │
+                        │                    no máximo 1 tentativa
+                        │                            │
+                        └───────────────┬────────────┘
+                                        ▼
+                              ┌─────────────────┐
+                              │ finalização     │
+                              │ sucesso/falha   │
+                              │ persistir JSONB │
+                              └─────────────────┘
+
+ Qualquer falha em parsing, análise ou geração também segue diretamente para
+ finalização com relatório e status controlado.
+```
+
+O estado compartilhado é tipado em `pipeline.state`; contratos de entrada,
+saída, IR, erros e relatórios ficam em `pipeline.contracts`. O grafo não executa
+o código produzido e não transforma validação estática em equivalência.
+
 ## Executar localmente
 
 Pré-requisitos: Python 3.14, Docker Desktop com Compose e uma chave Gemini
