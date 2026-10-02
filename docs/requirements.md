@@ -38,7 +38,7 @@ não são aceites por sua simples presença no documento.
 
 | ID | Bônus | Implementação prevista | Evidência de aceite |
 |---|---|---|---|
-| B1 | Observabilidade Langfuse ou LangSmith | Traces por execução, spans por nó e custos/latências quando houver LLM | Captura ou consulta reproduzível mostrando uma execução e seus spans |
+| B1 | Observabilidade Langfuse ou LangSmith | Traces por execução, spans por nó e custos/latências quando houver LLM | Integração opcional em `pipeline.observability` e extra `observability`; screenshot/trace remoto ainda pendente |
 | B2 | QA estático e pytest | Linter, type checks se adotados e testes automatizados | Comandos, versões, saída e cobertura publicados; sem declarar passagem antecipada |
 | B3 | Métrica de evaluation | Métrica definida, limitações explicitadas e resultado para B–F | Endpoint `/evaluation` e `scripts/evaluate_results.py`, com denominador, IDs e limitações; equivalência comportamental B/C registrada, D–F pendente |
 

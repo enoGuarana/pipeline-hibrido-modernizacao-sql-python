@@ -127,6 +127,44 @@ O harness usa schema temporário, compara a rotina original com o Python gerado
 e remove o schema ao terminar. A evidência está em
 `results/behavioral-bc.json`.
 
+## Observabilidade Langfuse
+
+O projeto possui integração opcional com o SDK oficial `langfuse` v4. Quando
+as três variáveis abaixo estão configuradas, cada chamada de `/modernize` cria
+uma trace raiz e spans para `parsing`, `semantic_analysis`, `generation`,
+`validation`, `repair` e `finalization`:
+
+```powershell
+pip install -e ".[dev,observability]"
+$env:LANGFUSE_PUBLIC_KEY = "pk-lf-..."
+$env:LANGFUSE_SECRET_KEY = "sk-lf-..."
+$env:LANGFUSE_HOST = "https://cloud.langfuse.com"
+$env:LANGFUSE_TRACING_ENVIRONMENT = "local"
+```
+
+Sem as credenciais, o adaptador executa em modo no-op. Assim, o pipeline local
+continua funcional sem enviar dados acidentalmente. A integração não registra
+chaves e envia apenas identificadores, status e metadados mínimos — não o SQL
+completo.
+
+### Captura de tela da evidência
+
+A captura deve mostrar a trace de uma chamada `/modernize` no painel Langfuse,
+com a árvore de spans acima e o status da geração/validação. Ela ainda não é
+versionada neste checkout: não há projeto Langfuse nem credenciais disponíveis
+para produzir uma captura real. Não foi incluída uma imagem simulada.
+
+Para gerar a evidência após configurar o serviço:
+
+1. Inicie a aplicação e execute uma chamada de `/modernize`.
+2. Abra a trace retornada no painel Langfuse.
+3. Salve a imagem como `docs/assets/langfuse-trace.png`.
+4. Adicione ao README: `![Trace Langfuse](docs/assets/langfuse-trace.png)`.
+
+Referências oficiais: [SDK Python Langfuse](https://langfuse.com/docs/observability/sdk/overview),
+[tipos de observação](https://langfuse.com/docs/observability/features/observation-types)
+e [self-host com Docker Compose](https://langfuse.com/self-hosting/deployment/docker-compose).
+
 ## Decisões e trade-offs
 
 - **Monólito modular:** reduz operação e mantém fronteiras claras; ainda há um
@@ -141,6 +179,15 @@ e remove o schema ao terminar. A evidência está em
   uma AST completa de PL/pgSQL.
 - **Um único reparo:** limita custo e ciclos infinitos; uma saída inválida é
   preservada como falha.
+- **Langfuse opcional:** adiciona traces por execução e nó quando configurado;
+  não obriga credenciais nem infraestrutura de observabilidade no modo local.
+
+Bibliotecas externas adicionadas nesta etapa:
+
+- `langfuse>=4.7,<5`, como dependência opcional `observability`, para traces
+  OpenTelemetry e inspeção de execuções. Ela foi escolhida por ter SDK Python
+  oficial e integração baseada em observações; não é necessária para o caminho
+  principal sem observabilidade.
 
 Detalhes estão em [docs/architecture.md](docs/architecture.md) e nos
 [ADRs](docs/adr/).

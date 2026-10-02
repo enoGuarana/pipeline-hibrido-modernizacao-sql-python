@@ -11,6 +11,7 @@ from langgraph.graph import END, START, StateGraph
 
 from .contracts import ExecutionError, StageReport
 from .llm.client import LLMError, build_prompt, generate
+from .observability import trace_node
 from .parsing import parse_routine
 from .state import PipelineState
 
@@ -55,6 +56,7 @@ def _skipped(state: PipelineState, name: str) -> dict[str, Any]:
     return {"stage_reports": _with_stage(state, _stage(name, "failure", warnings=["stage_skipped"]))}
 
 
+@trace_node("parsing")
 def parse_node(state: PipelineState) -> dict[str, Any]:
     stage = "parsing"
     source = state.get("source_code", "")
@@ -79,6 +81,7 @@ def parse_node(state: PipelineState) -> dict[str, Any]:
     }
 
 
+@trace_node("semantic_analysis")
 def semantic_analysis_node(state: PipelineState) -> dict[str, Any]:
     stage = "semantic_analysis"
     if state.get("status") == "failure":
@@ -127,6 +130,7 @@ def semantic_analysis_node(state: PipelineState) -> dict[str, Any]:
     }
 
 
+@trace_node("generation")
 async def generation_node(state: PipelineState) -> dict[str, Any]:
     stage = "generation"
     if state.get("status") == "failure":
@@ -182,6 +186,7 @@ async def generation_node(state: PipelineState) -> dict[str, Any]:
     }
 
 
+@trace_node("validation")
 def validation_node(state: PipelineState) -> dict[str, Any]:
     stage = "validation"
     if state.get("status") == "failure":
@@ -233,6 +238,7 @@ def _route_after_validation(state: PipelineState) -> str:
     return "finalization"
 
 
+@trace_node("repair")
 async def repair_node(state: PipelineState) -> dict[str, Any]:
     stage = "repair"
     previous_code = state.get("generated_code", "")
@@ -266,6 +272,7 @@ async def repair_node(state: PipelineState) -> dict[str, Any]:
     }
 
 
+@trace_node("finalization")
 def finalize_node(state: PipelineState) -> dict[str, Any]:
     errors = state.get("errors", [])
     status = "failure" if errors else ("partial" if state.get("status") == "partial" else "success")

@@ -8,6 +8,7 @@ from pydantic import BaseModel, Field
 from .db import create_pending_run, fetch_evaluation_runs, finalize_run, lifespan_pool
 from .evaluation import calculate_metrics
 from .graph import build_graph
+from .observability import observation
 
 
 class ModernizeRequest(BaseModel):
@@ -104,7 +105,15 @@ async def modernize(payload: ModernizeRequest, request: Request) -> JSONResponse
         "errors": [],
     }
     try:
-        result = await graph.ainvoke(initial_state)
+        with observation(
+            "modernize",
+            input_data={"run_id": run_id, "source_sha256": source_sha256},
+            metadata={"component": "pipeline", "route": "/modernize"},
+            as_type="agent",
+        ) as trace:
+            result = await graph.ainvoke(initial_state)
+            if trace is not None:
+                trace.update(output={"run_id": run_id, "status": result.get("status")})
         status = result.get("status", "failure")
         report = result.get("report", {})
         await finalize_run(
