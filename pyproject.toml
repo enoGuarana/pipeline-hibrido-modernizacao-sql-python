@@ -24,6 +24,10 @@ dev = [
 observability = [
     "langfuse>=4.7,<5",
 ]
+dashboard = [
+    "requests>=2.32,<3",
+    "streamlit>=1.40,<2",
+]
 
 [tool.ruff]
 line-length = 100

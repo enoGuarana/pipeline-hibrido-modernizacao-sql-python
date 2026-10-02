@@ -83,6 +83,19 @@ $env:DATABASE_URL = "postgresql://postgres:postgres@localhost:55432/modernizatio
 langgraph dev --no-browser
 ```
 
+Em outro terminal, para abrir o painel interno de operação:
+
+```powershell
+pip install -e ".[dashboard]"
+streamlit run dashboard.py
+```
+
+O painel usa `PIPELINE_API_URL` para o endereço do FastAPI (padrão:
+`http://localhost:8000`) e `DATABASE_URL` para a auditoria PostgreSQL. Ele não
+substitui a API: serve para submissão manual, avaliação e revisão Human-in-the-loop.
+No setup local deste repositório, o LangGraph CLI pode usar a porta `8125`; nesse
+caso, execute `$env:PIPELINE_API_URL = "http://localhost:8125"` antes do Streamlit.
+
 Verifique a API:
 
 ```powershell
