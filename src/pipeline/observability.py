@@ -21,6 +21,8 @@ R = TypeVar("R")
 def tracing_enabled() -> bool:
     """Return true only when SDK and both project credentials are configured."""
 
+    # Sem as duas chaves, o caminho é no-op: observabilidade não pode impedir
+    # desenvolvimento local nem enviar dados acidentalmente.
     return bool(
         get_client
         and os.getenv("LANGFUSE_PUBLIC_KEY")
@@ -38,6 +40,8 @@ def observation(
 ) -> Iterator[Any]:
     """Create a Langfuse observation or transparently do nothing."""
 
+    # O mesmo context manager atende Cloud e self-host via LANGFUSE_HOST; o
+    # restante da aplicação não precisa conhecer detalhes do provedor.
     if not tracing_enabled():
         yield None
         return
@@ -60,6 +64,8 @@ def observation(
 def trace_node(name: str) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """Trace a graph node while keeping its original sync/async contract."""
 
+    # O decorator preserva funções síncronas e assíncronas, porque o grafo usa
+    # ambos os tipos sem alterar o contrato esperado pelo LangGraph.
     def decorator(function: Callable[P, R]) -> Callable[P, R]:
         if inspect.iscoroutinefunction(function):
 

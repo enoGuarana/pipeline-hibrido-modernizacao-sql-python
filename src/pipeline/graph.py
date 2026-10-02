@@ -58,6 +58,8 @@ def _skipped(state: PipelineState, name: str) -> dict[str, Any]:
 
 @trace_node("parsing")
 def parse_node(state: PipelineState) -> dict[str, Any]:
+    # Parsing produz uma IR estrutural. Ele não tenta fingir que possui uma AST
+    # completa de PL/pgSQL; construções desconhecidas ficam registradas.
     stage = "parsing"
     source = state.get("source_code", "")
     parsed = parse_routine(source)
@@ -83,6 +85,8 @@ def parse_node(state: PipelineState) -> dict[str, Any]:
 
 @trace_node("semantic_analysis")
 def semantic_analysis_node(state: PipelineState) -> dict[str, Any]:
+    # A análise separa fatos extraídos, riscos e inferências para que a LLM não
+    # receba uma hipótese como se fosse comportamento comprovado.
     stage = "semantic_analysis"
     if state.get("status") == "failure":
         return _skipped(state, stage)
@@ -132,6 +136,8 @@ def semantic_analysis_node(state: PipelineState) -> dict[str, Any]:
 
 @trace_node("generation")
 async def generation_node(state: PipelineState) -> dict[str, Any]:
+    # Com chave Gemini, este nó chama o provedor real; sem chave, usa um stub
+    # explícito para permitir testar o fluxo sem alegar geração de LLM.
     stage = "generation"
     if state.get("status") == "failure":
         return _skipped(state, stage)
@@ -188,6 +194,8 @@ async def generation_node(state: PipelineState) -> dict[str, Any]:
 
 @trace_node("validation")
 def validation_node(state: PipelineState) -> dict[str, Any]:
+    # Validação estática reduz erros óbvios, mas não executa o código e não
+    # prova equivalência com a rotina original.
     stage = "validation"
     if state.get("status") == "failure":
         return _skipped(state, stage)
@@ -229,6 +237,8 @@ def validation_node(state: PipelineState) -> dict[str, Any]:
 
 
 def _route_after_validation(state: PipelineState) -> str:
+    # O roteamento concentra a política de custo: somente erro de validação,
+    # com Gemini disponível e antes da segunda tentativa, pode entrar em repair.
     errors = state.get("errors", [])
     if any(error.get("code", "").startswith("LLM_") for error in errors):
         return "finalization"
@@ -240,6 +250,8 @@ def _route_after_validation(state: PipelineState) -> str:
 
 @trace_node("repair")
 async def repair_node(state: PipelineState) -> dict[str, Any]:
+    # A tentativa anterior permanece no relatório; o novo código é apenas uma
+    # correção limitada, não um loop aberto de autoedição.
     stage = "repair"
     previous_code = state.get("generated_code", "")
     errors = state.get("errors", [])
@@ -274,6 +286,8 @@ async def repair_node(state: PipelineState) -> dict[str, Any]:
 
 @trace_node("finalization")
 def finalize_node(state: PipelineState) -> dict[str, Any]:
+    # Finalização transforma o estado transitório em relatório persistível e
+    # mantém hashes, modelo, tentativas e erros para auditoria.
     errors = state.get("errors", [])
     status = "failure" if errors else ("partial" if state.get("status") == "partial" else "success")
     finalization_report = _stage("finalization", "success")
@@ -301,6 +315,8 @@ def finalize_node(state: PipelineState) -> dict[str, Any]:
 
 
 def build_graph():
+    # Os nós são registrados separadamente para facilitar testes, tracing e
+    # substituição futura de um componente sem criar um framework próprio.
     graph = StateGraph(PipelineState)
     graph.add_node("parsing", parse_node)
     graph.add_node("semantic_analysis", semantic_analysis_node)

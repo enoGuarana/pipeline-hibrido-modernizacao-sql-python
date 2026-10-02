@@ -8,6 +8,8 @@ ParameterMode = Literal["IN", "OUT", "INOUT", "unknown"]
 
 
 class InputContract(TypedDict):
+    # Contrato mínimo recebido pela API; schema não é uma autorização para
+    # modificar qualquer banco automaticamente.
     source_code: str
     schema: str | None
 
@@ -21,6 +23,8 @@ class ParameterContract(TypedDict, total=False):
 
 
 class IntermediateRepresentation(TypedDict, total=False):
+    # IR deliberadamente parcial: preserva o que foi extraído e explicita o que
+    # o parser não conseguiu representar.
     routine_name: str | None
     routine_kind: Literal["function", "procedure", "unknown"]
     language: str | None
@@ -43,6 +47,8 @@ class ExecutionError(TypedDict, total=False):
 
 
 class StageReport(TypedDict, total=False):
+    # Cada nó deixa uma trilha própria, permitindo diferenciar fato, aviso,
+    # decisão e erro sem depender apenas do status final.
     stage: str
     status: StageStatus
     findings: list[str]
@@ -53,6 +59,8 @@ class StageReport(TypedDict, total=False):
 
 
 class ModernizeResponseContract(TypedDict, total=False):
+    # Resposta externa resumida; detalhes de rastreabilidade permanecem no
+    # relatório e no histórico PostgreSQL.
     run_id: int
     status: ExecutionStatus
     generated_code: str | None

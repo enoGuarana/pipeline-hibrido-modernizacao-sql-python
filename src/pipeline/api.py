@@ -12,6 +12,8 @@ from .observability import observation
 
 
 class ModernizeRequest(BaseModel):
+    # O SQL chega como texto bruto para preservar a origem; o schema é apenas
+    # contexto opcional e não dispara alterações automáticas no banco.
     source_code: str = Field(min_length=1)
     schema: str | None = None
 
@@ -67,6 +69,8 @@ async def evaluation(request: Request) -> JSONResponse:
 
 @app.post("/modernize")
 async def modernize(payload: ModernizeRequest, request: Request) -> JSONResponse:
+    # A API não executa o Python gerado: ela orquestra o grafo e persiste a
+    # evidência de cada tentativa para revisão posterior.
     pool = getattr(request.app.state, "db_pool", None)
     graph = getattr(request.app.state, "graph", None)
     if pool is None or graph is None:
@@ -75,6 +79,8 @@ async def modernize(payload: ModernizeRequest, request: Request) -> JSONResponse
     source_sha256 = hashlib.sha256(payload.source_code.encode("utf-8")).hexdigest()
     schema_sha256 = hashlib.sha256(payload.schema.encode("utf-8")).hexdigest() if payload.schema else None
     pending_report = {
+        # Registrar pending antes do grafo permite rastrear que a execução
+        # começou, mesmo que uma falha ocorra antes do primeiro nó.
         "status": "pending",
         "reason": "pipeline_started",
         "received_source_length": len(payload.source_code),
@@ -111,6 +117,8 @@ async def modernize(payload: ModernizeRequest, request: Request) -> JSONResponse
             metadata={"component": "pipeline", "route": "/modernize"},
             as_type="agent",
         ) as trace:
+            # O LangGraph controla a sequência dos nós; a API permanece
+            # responsável pelo ciclo de vida HTTP e pela persistência final.
             result = await graph.ainvoke(initial_state)
             if trace is not None:
                 trace.update(output={"run_id": run_id, "status": result.get("status")})
@@ -124,6 +132,8 @@ async def modernize(payload: ModernizeRequest, request: Request) -> JSONResponse
             generated_code=result.get("generated_code"),
         )
     except Exception as exc:  # noqa: BLE001 - controlled pipeline failure path
+        # Este é o último contorno de segurança: uma exceção inesperada vira
+        # relatório de falha e tenta finalizar o pending, sem ocultar a causa.
         failure_report = {
             "status": "failure",
             "errors": [{"code": "PIPELINE_EXCEPTION", "message": str(exc), "stage": "pipeline"}],

@@ -22,6 +22,8 @@ def database_url() -> str:
 
 
 def make_pool() -> AsyncConnectionPool:
+    # O pool evita abrir uma conexão por etapa e permite que a API reutilize a
+    # infraestrutura sem acoplar o grafo ao ciclo de vida do banco.
     return AsyncConnectionPool(
         conninfo=database_url(),
         min_size=int(os.getenv("DB_POOL_MIN_SIZE", "1")),
@@ -43,6 +45,8 @@ async def create_pending_run(
     report: dict[str, object],
 ) -> int:
     """Create the history row before pipeline processing starts."""
+    # A execução nasce como pending para não desaparecer se falhar antes do
+    # primeiro nó ou durante uma chamada externa.
     async with pool.connection() as connection:
         async with connection.cursor() as cursor:
             await cursor.execute(
@@ -69,6 +73,7 @@ async def finalize_run(
     generated_code: str | None = None,
 ) -> None:
     """Update the history row when the current pipeline slice finishes."""
+    # JSONB acomoda novos achados e metadados sem uma migração por campo novo.
     async with pool.connection() as connection:
         await connection.execute(
             """

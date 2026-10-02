@@ -29,6 +29,8 @@ class LLMResult:
 
 
 def build_prompt(*, source_code: str, ir: dict[str, Any], analysis: dict[str, Any], schema: str | None) -> str:
+    # A LLM recebe origem, IR e análise para não depender apenas do SQL bruto
+    # nem perder riscos identificados antes da geração.
     template = PROMPT_PATH.read_text(encoding="utf-8")
     return template.format(
         source_code=source_code,
@@ -49,6 +51,8 @@ def _without_markdown_fences(value: str) -> str:
 
 
 async def generate(*, prompt: str) -> LLMResult:
+    # A credencial vem somente do ambiente e nunca entra no prompt, relatório
+    # ou metadados persistidos.
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         raise LLMError("GEMINI_API_KEY is not configured")
